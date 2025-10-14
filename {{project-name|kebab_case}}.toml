@@ -1,0 +1,10 @@
+[default.poem_public]
+address = "127.0.0.1"
+port = 8000
+
+[default.poem_backoffice]
+address = "127.0.0.1"
+port = 8001
+
+[default.sqlite]
+path = "./sqlite.db"

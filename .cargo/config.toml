@@ -1,0 +1,3 @@
+[env]
+ENV_PROJECT_NAME = { value = "{{project-name|kebab_case}}", force = true}
+ENV_PROJECT_NAME_SHOUT_SNAKE = { value = "{{project-name|shouty_snake_case}}", force = true}

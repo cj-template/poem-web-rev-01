@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@layer components {
+    h1 {
+        font-size: var(--text-2xl--line-height);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    h2 {
+        font-size: var(--text-xl);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    .ul-bullet {
+        list-style: disc;
+    }
+}
+
+@utility btn {
+    @apply flex font-bold py-2 px-4 rounded justify-center items-center;
+
+    svg {
+        @apply inline-block max-h-4 max-w-4 ml-1;
+    }
+}
+
+@utility btn-sky-blue {
+    @apply bg-sky-500 hover:bg-sky-700 text-white;
+}
+
+@utility tint-bg {
+    @apply bg-black/10 dark:bg-white/10;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+body {
+    @apply bg-blue-300 dark:bg-blue-950;
+}
+
+.nav-content {
+    @apply flex bg-white dark:bg-gray-800 dark:text-white mb-3 px-7 py-7 mx-auto sticky top-0 left-0 right-0 z-10;
+
+    .nav-home {
+        @apply flex-3 font-bold text-left;
+    }
+
+    .nav-item {
+        @apply flex-1 text-center;
+    }
+
+    .nav-item-active {
+        @apply text-sky-500;
+    }
+
+    .nav-user {
+        @apply flex-3 text-right;
+    }
+}
+
+.main-content {
+    @apply bg-white rounded-2xl dark:bg-gray-800 dark:text-white mt-3 px-7 py-7 mx-auto;
+}
+
+.flash-message {
+    @apply fixed bottom-0 left-0 right-0 text-white p-4 text-center z-10;
+}
+
+.flash-message-success {
+    @apply bg-green-500;
+}
+
+.flash-message-error {
+    @apply bg-red-500;
+}
+
+.flash-message-warning {
+    @apply bg-yellow-500;
+}
+
+.form {
+    @apply flex flex-col;
+
+    .label {
+        @apply font-bold inline-block mb-1;
+    }
+
+    .form-item, .form-group .form-item {
+        @apply mb-2 text-lg tint-bg rounded p-2;
+    }
+}
+
+.validation-error-list {
+    @apply text-red-500 mb-2;
+
+    .validation-error-message {
+        @apply text-sm list-disc list-inside;
+    }
+}
+
+.table-full {
+    @apply w-full text-left table-auto mt-3 border-separate border-spacing-2;
+
+    thead tr th {
+        @apply font-bold p-4 tint-bg rounded-2xl;
+    }
+
+    tbody tr td, tbody tr th {
+        @apply p-4 tint-bg rounded-2xl;
+    }
+
+    .action {
+        @apply text-right;
+
+        .icon {
+            @apply inline-block ml-2 size-5!;
+        }
+    }
+}
+
+.pre {
+    @apply tint-bg rounded text-wrap p-4 mb-2;
+}

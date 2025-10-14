@@ -1,0 +1,27 @@
+[package]
+name = "shared"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thiserror = { workspace = true }
+error-stack = { workspace = true }
+poem = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+figment = { workspace = true }
+tokio = { workspace = true }
+maud = { workspace = true }
+rusqlite = { workspace = true }
+argon2 = { workspace = true }
+rmp-serde = { workspace = true }
+cjtoolkit-structured-validator = { workspace = true }
+uuid = { workspace = true }
+rust-embed = { workspace = true }
+chrono = { workspace = true }
+serde_qs = { workspace = true }
+log = { workspace = true }
+mry = { workspace = true }
+
+mime = "0.3.17"
+colog = "1.4.0"

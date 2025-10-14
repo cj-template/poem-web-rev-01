@@ -1,0 +1,23 @@
+[package]
+name = "backoffice"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thiserror = { workspace = true }
+error-stack = { workspace = true }
+shared = { workspace = true }
+poem = { workspace = true }
+rusqlite = { workspace = true }
+uuid = { workspace = true }
+rust-embed = { workspace = true }
+maud = { workspace = true }
+serde = { workspace = true }
+cjtoolkit-structured-validator = { workspace = true }
+chrono = { workspace = true }
+paspio = { workspace = true }
+tokio = { workspace = true }
+mry = { workspace = true }
+serde_json = { workspace = true }
+
+regex = "1.11.2"

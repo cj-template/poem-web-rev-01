@@ -1,0 +1,9 @@
+[template]
+ignore = [
+    "README.md"
+]
+exclude = [
+    "backoffice/**",
+    "public/**",
+    "shared/**"
+]

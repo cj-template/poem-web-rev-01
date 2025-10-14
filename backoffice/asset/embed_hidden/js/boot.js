@@ -1,0 +1,3 @@
+import {start} from 'assets/main.js';
+
+start();

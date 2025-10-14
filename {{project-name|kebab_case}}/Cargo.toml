@@ -1,0 +1,11 @@
+[package]
+name = "{{project-name|kebab_case}}"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+backoffice = { workspace = true }
+public = { workspace = true }
+thiserror = { workspace = true }
+error-stack = { workspace = true }
+tokio = { workspace = true }
