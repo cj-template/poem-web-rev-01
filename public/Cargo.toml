@@ -4,10 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+shared = { workspace = true }
+
 thiserror = { workspace = true }
 error-stack = { workspace = true }
-shared = { workspace = true }
 poem = { workspace = true }
 rusqlite = { workspace = true }
 cjtoolkit-structured-validator = { workspace = true }
 mry = { workspace = true }
+rust-embed = { workspace = true }
+maud = { workspace = true }

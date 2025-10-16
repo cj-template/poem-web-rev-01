@@ -183,7 +183,7 @@ impl ContextHtmlBuilder {
 
                 if self.htmx_header.request {
                     return html! {
-                        title { (title) " | Rusty Shorty" }
+                        title { (title) " | App" }
                         (content)
                         div #alert hx-swap-oob="true" {
                             (flash.flash_message_html())

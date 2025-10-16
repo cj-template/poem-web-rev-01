@@ -1,7 +1,3 @@
-pub mod context_html;
-pub mod locale;
-pub mod validate;
-
 use crate::common::embed::AssetHidden;
 use crate::common::js::{js_boot, js_vec_wrap};
 use maud::{DOCTYPE, Markup, PreEscaped, html};
@@ -38,7 +34,7 @@ fn html_doc(title: &str, content: Markup, head: Markup, footer: Markup) -> Marku
                 (html_import_map())
                 (head)
             }
-            body {
+            body .body {
                 (content)
                 div #command { }
                 div #footer {

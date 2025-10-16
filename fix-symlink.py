@@ -8,3 +8,6 @@ os.chdir("backoffice/asset/embed_hidden/js")
 os.symlink("../../embed/js", "assets", target_is_directory=True)
 
 os.chdir(current_dir)
+
+os.chdir("public/asset/embed_hidden/js")
+os.symlink("../../embed/js", "assets", target_is_directory=True)

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+.body {
+    @apply bg-cover bg-no-repeat m-0 bg-fixed bg-linear-to-tr
+    from-white to-blue-300 dark:from-gray-700 dark:to-indigo-950
+    dark:text-white;
+}
+
+.home-content {
+    @apply text-right mr-20 mt-20;
+
+    .hello {
+        @apply text-8xl;
+    }
+
+    .note {
+        @apply text-lg;
+    }
+}

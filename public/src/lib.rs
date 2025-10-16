@@ -1,21 +1,33 @@
-pub(crate) mod shorty;
+pub(crate) mod common;
+pub(crate) mod home;
 
+use crate::common::embed::{AssetFilesEndPoint, EMBED_PATH};
+use crate::common::locale::build_locale_resources;
+use crate::home::route::home_route;
 use error_stack::{Report, ResultExt};
 use poem::middleware::CatchPanic;
 use poem::{EndpointExt, IntoResponse, Server};
 use shared::config::Config;
+use shared::embed::enforce_min_js_on_prod;
 use shared::error::boot_error::MainError;
+use shared::htmx::htmx_request_around;
 use shared::log::log_poem_error;
-use shorty::route::shorty::shorty_route;
 
 pub async fn boot() -> Result<(), Report<MainError>> {
     let config = Config::fetch()
         .await
         .change_context(MainError::ConfigError)?;
 
-    let route = shorty_route();
+    let route = home_route();
+
+    let route = route.nest(
+        EMBED_PATH,
+        enforce_min_js_on_prod(AssetFilesEndPoint::new()),
+    );
 
     let route = route
+        .around(htmx_request_around)
+        .data(build_locale_resources().change_context(MainError::LocaleError)?)
         .catch_all_error(catch_all_error)
         .with(CatchPanic::new());
 

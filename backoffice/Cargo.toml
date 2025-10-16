@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+shared = { workspace = true }
+
 thiserror = { workspace = true }
 error-stack = { workspace = true }
-shared = { workspace = true }
 poem = { workspace = true }
 rusqlite = { workspace = true }
 uuid = { workspace = true }
@@ -19,5 +20,4 @@ paspio = { workspace = true }
 tokio = { workspace = true }
 mry = { workspace = true }
 serde_json = { workspace = true }
-
-regex = "1.11.2"
+regex = { workspace = true }
