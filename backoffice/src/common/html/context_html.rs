@@ -1,11 +1,11 @@
-use crate::common::html::HtmlBuilder;
 use crate::common::html::locale::top::TopBuildLocale;
+use crate::common::html::HtmlBuilder;
 use crate::user::pointer::user_pointer::UserPointer;
 use crate::user::role::Role;
 use crate::user::route::login::LOGIN_ROUTE;
 use crate::user::route::user::USER_ROUTE;
 use error_stack::Report;
-use maud::{Markup, PreEscaped, html};
+use maud::{html, Markup, PreEscaped};
 use poem::i18n::Locale;
 use shared::context::{Context, ContextError, FromContext};
 use shared::flash::{Flash, FlashMessageHtml};
@@ -219,7 +219,7 @@ impl ContextHtmlBuilder {
         html! {
             nav .nav-content {
                 span .nav-home {
-                    a href="/" hx-push-url="true" hx-target="#main-content" hx-get="/" { "Rusty Shorty" }
+                    a href="/" hx-push-url="true" hx-target="#main-content" hx-get="/" { "App" }
                 }
                 (self.parse_navigation(tag))
                 span .nav-user {
