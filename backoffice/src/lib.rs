@@ -4,7 +4,6 @@ pub(crate) mod shorty;
 pub(crate) mod stack;
 pub(crate) mod user;
 
-use crate::common::cache::init_request_cache;
 use crate::common::embed::{AssetFilesEndPoint, EMBED_PATH};
 use crate::common::locale::build_locale_resources;
 use crate::home::home_route;
@@ -25,6 +24,7 @@ use shared::embed::enforce_min_js_on_prod;
 use shared::error::boot_error::MainError;
 use shared::htmx::htmx_request_around;
 use shared::log::log_poem_error;
+use shared::request_cache::init_request_cache;
 use user::route::login::LOGIN_ROUTE;
 
 pub mod export {

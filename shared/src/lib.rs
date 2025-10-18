@@ -13,3 +13,4 @@ pub mod locale;
 pub mod log;
 pub mod password;
 pub mod query_string;
+pub mod request_cache;
