@@ -23,6 +23,7 @@ pub fn flag_icon() -> Markup {
     get_icon("icon/flag.svg")
 }
 
+#[allow(dead_code)]
 pub fn trash_icon() -> Markup {
     get_icon("icon/trash.svg")
 }

@@ -32,13 +32,6 @@ impl NavigationItem {
                 role: Role::Visitor,
             },
             Self {
-                name: "URL Redirect".to_string(),
-                url: "/shorty".to_string(),
-                tag: "id-tag-shorty".to_string(),
-                locale: "top-navigation-url".to_string(),
-                role: Role::User,
-            },
-            Self {
                 name: "User".to_string(),
                 url: "/user".to_string(),
                 tag: "id-tag-user".to_string(),

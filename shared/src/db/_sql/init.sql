@@ -16,16 +16,6 @@ create table user_login_tokens
     foreign key (user_id) references backoffice_users (id) on delete cascade
 );
 
-create table url_redirect
-(
-    id                 integer primary key autoincrement not null,
-    url_path           text unique                       not null,
-    url_redirect       text unique                       not null,
-    created_at         text                              not null,
-    created_by_user_id integer                           not null,
-    foreign key (created_by_user_id) references backoffice_users (id) on delete cascade
-);
-
 create table error_stack
 (
     id            integer primary key autoincrement not null,
