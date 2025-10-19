@@ -1,11 +1,12 @@
-use crate::common::html::locale::top::TopBuildLocale;
 use crate::common::html::HtmlBuilder;
+use crate::common::html::locale::top::TopBuildLocale;
+use crate::common::icon::{exclamation_circle_icon, home_icon, user_minus_icon, users_icon};
 use crate::user::pointer::user_pointer::UserPointer;
 use crate::user::role::Role;
 use crate::user::route::login::LOGIN_ROUTE;
 use crate::user::route::user::USER_ROUTE;
 use error_stack::Report;
-use maud::{html, Markup, PreEscaped};
+use maud::{Markup, PreEscaped, html};
 use poem::i18n::Locale;
 use shared::context::{Context, ContextError, FromContext};
 use shared::flash::{Flash, FlashMessageHtml};
@@ -19,6 +20,7 @@ pub struct NavigationItem {
     tag: String,
     locale: String,
     role: Role,
+    icon: Markup,
 }
 
 impl NavigationItem {
@@ -30,6 +32,7 @@ impl NavigationItem {
                 tag: "id-tag-home".to_string(),
                 locale: "top-navigation-home".to_string(),
                 role: Role::Visitor,
+                icon: home_icon(),
             },
             Self {
                 name: "User".to_string(),
@@ -37,6 +40,7 @@ impl NavigationItem {
                 tag: "id-tag-user".to_string(),
                 locale: "top-navigation-user".to_string(),
                 role: Role::User,
+                icon: users_icon(),
             },
             Self {
                 name: "Stack".to_string(),
@@ -44,6 +48,7 @@ impl NavigationItem {
                 tag: "id-tag-stack".to_string(),
                 locale: "top-navigation-stack".to_string(),
                 role: Role::Root,
+                icon: exclamation_circle_icon(),
             },
         ]
         .into()
@@ -194,10 +199,15 @@ impl ContextHtmlBuilder {
                     div #alert {
                         (flash.flash_message_html())
                     }
-                    (self.build_navigation(current_tag))
-                    div .content-wrapper {
-                        div .container .main-content #main-content {
-                            (content)
+                    div .wrapper {
+                        div .sidebar-wrapper {
+                            (self.build_navigation(current_tag))
+                        }
+                        div .content-wrapper {
+                            (self.build_user())
+                            div .container .main-content #main-content {
+                                (content)
+                            }
                         }
                     }
                 };
@@ -214,23 +224,13 @@ impl ContextHtmlBuilder {
     }
 
     fn build_navigation(&self, tag: String) -> Markup {
-        let user_context = &self.user_id_context;
-        let top_build_locale = TopBuildLocale::new(&self.locale, &user_context.username);
         html! {
             nav .nav-content {
-                span .nav-home {
+                div .nav-home {
                     a href="/" hx-push-url="true" hx-target="#main-content" hx-get="/" { "App" }
                 }
-                (self.parse_navigation(tag))
-                span .nav-user {
-                    @if user_context.role >= Role::User {
-                        a href=(USER_ROUTE.to_owned() + "/")
-                            hx-push-url="true" hx-target="#main-content" hx-get=(USER_ROUTE.to_owned() + "/") { (top_build_locale.hello) }
-                        " "
-                        a href=(LOGIN_ROUTE.to_owned() + "/logout") { (top_build_locale.hello_logout) }
-                    } @else {
-                        a href=(LOGIN_ROUTE.to_owned() + "/") { (top_build_locale.visitor) }
-                    }
+                div .navigation {
+                    (self.parse_navigation(tag))
                 }
             }
         }
@@ -244,16 +244,18 @@ impl ContextHtmlBuilder {
             }
             let html = if item.tag == tag {
                 html! {
-                    span .nav-item .nav-item-active id=(item.tag) {
+                    div .nav-item .nav-item-active id=(item.tag) {
                         a href=(item.url) hx-push-url="true" hx-target="#main-content" hx-get=(item.url) {
+                            span .icon { (item.icon) }
                             (self.locale.text_with_default(item.locale.as_str(), &item.name))
                         }
                     }
                 }
             } else {
                 html! {
-                    span .nav-item id=(item.tag) {
+                    div .nav-item id=(item.tag) {
                         a href=(item.url) hx-push-url="true" hx-target="#main-content" hx-get=(item.url) {
+                            span .icon { (item.icon) }
                             (self.locale.text_with_default(item.locale.as_str(), &item.name))
                         }
                     }
@@ -262,6 +264,24 @@ impl ContextHtmlBuilder {
             output.push_str(html.into_string().as_str());
         }
         PreEscaped(output)
+    }
+
+    fn build_user(&self) -> Markup {
+        let user_context = &self.user_id_context;
+        let top_build_locale = TopBuildLocale::new(&self.locale, &user_context.username);
+        html! {
+            div .top-bar-user {
+                @if user_context.role >= Role::User {
+                    a href=(USER_ROUTE.to_owned() + "/")
+                        hx-push-url="true" hx-target="#main-content" hx-get=(USER_ROUTE.to_owned() + "/") { (top_build_locale.hello) }
+                    a class="mt-1.5!" href=(LOGIN_ROUTE.to_owned() + "/logout") {
+                        span .icon title=(top_build_locale.hello_logout) { (user_minus_icon()) }
+                    }
+                } @else {
+                    a href=(LOGIN_ROUTE.to_owned() + "/") { (top_build_locale.visitor) }
+                }
+            }
+        }
     }
 }
 

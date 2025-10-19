@@ -1,3 +1,3 @@
 # Home
 home-hello = Welcome
-home-paragraph = Check out the navigation above
+home-paragraph = Use the sidebar to navigate.

@@ -35,3 +35,19 @@ pub fn no_symbol_icon() -> Markup {
 pub fn document_magnifying_glass_icon() -> Markup {
     get_icon("icon/document_magnifying_glass.svg")
 }
+
+pub fn user_minus_icon() -> Markup {
+    get_icon("icon/user_minus.svg")
+}
+
+pub fn users_icon() -> Markup {
+    get_icon("icon/users.svg")
+}
+
+pub fn home_icon() -> Markup {
+    get_icon("icon/home.svg")
+}
+
+pub fn exclamation_circle_icon() -> Markup {
+    get_icon("icon/exclamation_circle.svg")
+}

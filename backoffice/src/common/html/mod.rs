@@ -38,7 +38,7 @@ fn html_doc(title: &str, content: Markup, head: Markup, footer: Markup) -> Marku
                 (html_import_map())
                 (head)
             }
-            body {
+            body .body {
                 (content)
                 div #command { }
                 div #footer {
