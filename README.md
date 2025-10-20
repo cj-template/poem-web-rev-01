@@ -13,7 +13,7 @@ Template for poem web.
 * Rusqlite
     * https://github.com/rusqlite/rusqlite
 * My Very Own CjToolkit Structured Validator
-    * https://github.com/cj-template/cjtoolkit-structured-validator
+    * https://github.com/cjtoolkit/cjtoolkit-structured-validator
 * Rust Embed
     * https://pyrossh.dev/repos/rust-embed
 
