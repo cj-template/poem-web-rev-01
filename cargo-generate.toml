@@ -1,6 +1,7 @@
 [template]
 ignore = [
-    "README.md"
+    "README.md",
+    "images"
 ]
 exclude = [
     "backoffice/**",
