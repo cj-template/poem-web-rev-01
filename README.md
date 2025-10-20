@@ -53,8 +53,8 @@ password: banana
 
 ### Public
 
-![Public Light Mode](images/public_dark.png)
-![Public Dark Mode](images/public_light.png)
+![Public Light Mode](images/public_light.png)
+![Public Dark Mode](images/public_dark.png)
 
 ### Backoffice
 
