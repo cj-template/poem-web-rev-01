@@ -16,6 +16,8 @@ Template for poem web.
     * https://github.com/cjtoolkit/cjtoolkit-structured-validator
 * Rust Embed
     * https://pyrossh.dev/repos/rust-embed
+* TailwindCSS
+    * https://tailwindcss.com/
 
 ## Usage
 
