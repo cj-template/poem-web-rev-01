@@ -1,6 +1,6 @@
 use crate::context::{Context, ContextError, FromContext};
 use error_stack::Report;
-use maud::{Markup, html};
+use maud::{html, Markup};
 use poem::session::Session;
 use serde::{Deserialize, Serialize};
 
@@ -17,21 +17,24 @@ impl Flash {
         match self {
             Self::Success { msg } => {
                 html! {
-                   div .flash-message .flash-message-success {
+                   div .flash-message .flash-message-success hx-get="/noop" hx-swap="outerHTML swap:5s"
+                        hx-target="this" hx-trigger="revealed delay:3s" {
                        (msg)
                    }
                 }
             }
             Self::Error { msg } => {
                 html! {
-                   div .flash-message .flash-message-error {
+                   div .flash-message .flash-message-error hx-get="/noop" hx-swap="outerHTML swap:5s"
+                        hx-target="this" hx-trigger="revealed delay:3s" {
                        (msg)
                    }
                 }
             }
             Self::Warning { msg } => {
                 html! {
-                   div .flash-message .flash-message-warning {
+                   div .flash-message .flash-message-warning hx-get="/noop" hx-swap="outerHTML swap:5s"
+                        hx-target="this" hx-trigger="revealed delay:3s" {
                        (msg)
                    }
                 }
