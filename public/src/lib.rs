@@ -8,10 +8,11 @@ use error_stack::{Report, ResultExt};
 use poem::middleware::CatchPanic;
 use poem::{EndpointExt, IntoResponse, Server};
 use shared::config::Config;
+use shared::csrf::{CSRF_PATH, route_csrf};
 use shared::embed::enforce_min_js_on_prod;
 use shared::error::boot_error::MainError;
-use shared::htmx::htmx_request_around;
 use shared::log::log_poem_error;
+use shared::request_cache::init_request_cache;
 
 pub async fn boot() -> Result<(), Report<MainError>> {
     let config = Config::fetch()
@@ -20,13 +21,15 @@ pub async fn boot() -> Result<(), Report<MainError>> {
 
     let route = home_route();
 
-    let route = route.nest(
-        EMBED_PATH,
-        enforce_min_js_on_prod(AssetFilesEndPoint::new()),
-    );
+    let route = route
+        .nest(
+            EMBED_PATH,
+            enforce_min_js_on_prod(AssetFilesEndPoint::new()),
+        )
+        .nest(CSRF_PATH, route_csrf());
 
     let route = route
-        .around(htmx_request_around)
+        .around(init_request_cache)
         .data(build_locale_resources().change_context(MainError::LocaleError)?)
         .catch_all_error(catch_all_error)
         .with(CatchPanic::new());

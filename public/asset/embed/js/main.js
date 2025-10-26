@@ -45,10 +45,36 @@ function addNavActive() {
     }
 }
 
+let token = "";
+
+function refreshCsrfToken() {
+    fetch("/csrf/token").then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        token = data.token;
+        updateTokenInput(data.token);
+        return data.token;
+    }).catch(function (error) {
+        console.error(error);
+    });
+}
+
+function updateTokenInput(newToken) {
+    let tokenInputs = document.querySelectorAll("input[name='csrf_token']");
+    for (let tokenInput of tokenInputs) {
+        tokenInput.value = newToken;
+    }
+}
+
+function getCsrfToken() {
+    return token;
+}
+
 export function start() {
     htmx.onLoad(function () {
         formatToLocalTime();
         addNavActive();
+        refreshCsrfToken();
     });
 
     htmx.on("htmx:responseError", function (evt) {
@@ -76,4 +102,6 @@ export function start() {
             focusScroll: true
         });
     });
+
+    window.csrfToken = getCsrfToken;
 }

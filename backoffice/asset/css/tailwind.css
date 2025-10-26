@@ -2,13 +2,31 @@
 
 @layer components {
     h1 {
-        font-size: var(--text-2xl--line-height);
+        font-size: var(--text-3xl);
         font-weight: var(--font-weight-semibold);
     }
 
     h2 {
+        font-size: var(--text-2xl);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    h3 {
         font-size: var(--text-xl);
         font-weight: var(--font-weight-semibold);
+    }
+
+    h4 {
+        font-size: var(--text-lg);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    h5 {
+        font-size: var(--text-base);
+    }
+
+    h6 {
+        font-size: var(--text-sm);
     }
 
     .ul-bullet {
@@ -44,7 +62,7 @@
     }
 
     .content-wrapper {
-        @apply flex-auto;
+        @apply flex-auto pb-20;
     }
 }
 
@@ -72,7 +90,7 @@
     @apply text-right pr-4 pt-3;
 
     a {
-        @apply block mt-0.5;
+        @apply inline-block mt-0.5;
 
         .icon {
             @apply inline-block ml-2 size-5!;
@@ -86,6 +104,11 @@
 
 .flash-message {
     @apply fixed bottom-0 left-0 right-0 text-white p-4 text-center z-15;
+}
+
+.flash-message.htmx-swapping {
+    opacity: 0;
+    transition: opacity 4s ease-out;
 }
 
 .flash-message-success {

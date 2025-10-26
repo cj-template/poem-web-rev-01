@@ -17,7 +17,6 @@ use std::sync::Arc;
 pub struct EditUserForm {
     pub username: String,
     pub role: Role,
-    pub csrf_token: String,
 }
 
 impl EditUserForm {
@@ -59,18 +58,15 @@ impl EditUserForm {
         &self,
         context_html_builder: &ContextHtmlBuilder,
         errors: Option<EditUserMessage>,
-        token: Option<Markup>,
         username: Option<String>,
     ) -> Markup {
         let errors = errors.unwrap_or_default();
-        let token = token.unwrap_or_default();
         let user_form_locale = UserFormLocale::new(&context_html_builder.locale);
         let username = username.unwrap_or_default();
         context_html_builder.attach_title(&user_form_locale.title_edit).attach_content(html! {
             h1 .mt-3 { (user_form_locale.title_edit) }
             h2 { (username) }
             form hx-boost="true" hx-target="#main-content" .form method="post" {
-                (token)
                 div .form-group {
                     label .label for="username" { (user_form_locale.username) } br;
                     input .form-item .w-full type="text" name="username" #username value=(self.username)

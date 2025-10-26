@@ -14,7 +14,6 @@ use std::sync::Arc;
 pub struct EditPasswordManagerForm {
     pub password: String,
     pub password_confirm: String,
-    pub csrf_token: String,
 }
 
 impl EditPasswordManagerForm {
@@ -50,11 +49,9 @@ impl EditPasswordManagerForm {
         &self,
         context_html_builder: &ContextHtmlBuilder,
         errors: Option<EditPasswordManagerMessage>,
-        token: Option<Markup>,
         username: Option<String>,
     ) -> Markup {
         let errors = errors.unwrap_or_default();
-        let token = token.unwrap_or_default();
         let user_form_locale = UserFormLocale::new(&context_html_builder.locale);
         let username = username.unwrap_or_default();
         context_html_builder
@@ -63,7 +60,6 @@ impl EditPasswordManagerForm {
                 h1 .mt-3 { (user_form_locale.title_edit_password) }
                 h2 { (username) }
                 form hx-boost="true" hx-target="#main-content" .form method="post" {
-                    (token)
                     div .form-group {
                         label .label for="password" { (user_form_locale.password) }
                         input .form-item .w-full type="password" name="password" #password

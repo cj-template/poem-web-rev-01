@@ -2,10 +2,11 @@ pub mod response;
 
 use crate::context::{Context, ContextError, FromContext};
 use crate::htmx::response::{HtmxResponse, HtmxResponseExt};
+use crate::request_cache::RequestCacheExt;
 use error_stack::{Report, ResultExt};
-use poem::http::{StatusCode, header};
+use poem::http::header;
 use poem::web::Redirect;
-use poem::{Endpoint, FromRequest, IntoResponse, Request, RequestBody, Response};
+use poem::{FromRequest, IntoResponse, Request, RequestBody, Response};
 use serde_json::json;
 use std::ops::Deref;
 use std::sync::Arc;
@@ -69,21 +70,10 @@ impl Clone for HtmxHeader {
     }
 }
 
-pub async fn htmx_request_around<EP: Endpoint>(
-    next: EP,
-    mut req: Request,
-) -> poem::Result<EP::Output> {
-    let header = HtmxHeader(Arc::new(HtmxHeaderData::new(&req)));
-    req.set_data(header);
-    next.call(req).await
-}
-
 impl<'a> FromRequest<'a> for HtmxHeader {
     async fn from_request(req: &'a Request, _body: &mut RequestBody) -> poem::Result<Self> {
-        let header = req.data::<HtmxHeader>().ok_or_else(|| {
-            poem::Error::from_string("missing header", StatusCode::INTERNAL_SERVER_ERROR)
-        })?;
-        Ok(header.clone())
+        req.get_or_init_cache(|| async { Ok(Self(Arc::new(HtmxHeaderData::new(req)))) })
+            .await
     }
 }
 
