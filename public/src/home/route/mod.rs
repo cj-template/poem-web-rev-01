@@ -1,6 +1,6 @@
 use crate::common::embed::AssetFileEndPoint;
 use crate::common::html::HtmlBuilder;
-use maud::{Markup, html};
+use maud::{html, Markup};
 use poem::i18n::Locale;
 use poem::{get, handler};
 use shared::locale::LocaleExt;
@@ -25,9 +25,17 @@ async fn home(locale: Locale) -> Markup {
     .build()
 }
 
+#[handler]
+async fn noop() -> () {
+    ()
+}
+
 pub fn home_route() -> poem::Route {
-    poem::Route::new().at("/", get(home)).at(
-        "/favicon.ico",
-        AssetFileEndPoint::new("favicon/favicon.ico"),
-    )
+    poem::Route::new()
+        .at("/", get(home))
+        .at(
+            "/favicon.ico",
+            AssetFileEndPoint::new("favicon/favicon.ico"),
+        )
+        .at("/noop", get(noop))
 }
