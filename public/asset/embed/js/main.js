@@ -46,17 +46,23 @@ function addNavActive() {
 }
 
 let token = "";
+let rotateToken = true;
 
 function refreshCsrfToken() {
-    fetch("/csrf/token").then(function (response) {
-        return response.json();
-    }).then(function (data) {
-        token = data.token;
-        updateTokenInput(data.token);
-        return data.token;
-    }).catch(function (error) {
-        console.error(error);
-    });
+    if (rotateToken) {
+        rotateToken = false;
+        fetch("/csrf/token").then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            token = data.token;
+            updateTokenInput(data.token);
+            return data.token;
+        }).catch(function (error) {
+            console.error(error);
+        });
+    } else {
+        fetchTokenFromInput();
+    }
 }
 
 function updateTokenInput(newToken) {
@@ -66,7 +72,16 @@ function updateTokenInput(newToken) {
     }
 }
 
+function fetchTokenFromInput() {
+    let tokenInputs = document.querySelectorAll("input[name='csrf_token']");
+    let tokenInput = tokenInputs[0];
+    if (tokenInput !== undefined) {
+        token = tokenInput.value;
+    }
+}
+
 function getCsrfToken() {
+    rotateToken = true;
     return token;
 }
 
@@ -101,6 +116,12 @@ export function start() {
             show: "#main-content",
             focusScroll: true
         });
+    });
+
+    document.body.addEventListener("htmx:configRequest", function (evt) {
+        if (evt.detail.verb !== "get" && evt.detail.verb !== "head") {
+            evt.detail.headers["X-Csrf-Token"] = getCsrfToken();
+        }
     });
 
     window.csrfToken = getCsrfToken;

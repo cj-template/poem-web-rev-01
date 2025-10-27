@@ -1,6 +1,6 @@
 use crate::common::embed::AssetHidden;
 use crate::common::js::{js_boot, js_vec_wrap};
-use maud::{DOCTYPE, Markup, PreEscaped, html};
+use maud::{html, Markup, PreEscaped, DOCTYPE};
 use shared::embed::EmbedAsString;
 
 fn html_import_map() -> Markup {
@@ -34,7 +34,7 @@ fn html_doc(title: &str, content: Markup, head: Markup, footer: Markup) -> Marku
                 (html_import_map())
                 (head)
             }
-            body .body hx-headers="js:{'X-Csrf-Token': csrfToken()}" {
+            body .body {
                 (content)
                 div #command { }
                 div #footer {
