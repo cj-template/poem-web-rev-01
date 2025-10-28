@@ -3,7 +3,7 @@ use maud::{Markup, html};
 use poem::error::ResponseError;
 use poem::http::StatusCode;
 use poem::web::{CsrfToken, CsrfVerifier, Json};
-use poem::{Endpoint, IntoResponse, Request, Response, get, handler};
+use poem::{Endpoint, FromRequest, IntoEndpoint, IntoResponse, Request, Response, get, handler};
 use serde_json::{Value, json};
 use std::error::Error;
 use thiserror::Error;
@@ -51,19 +51,25 @@ impl CsrfVerifierError for CsrfVerifier {
     }
 }
 
-pub struct CsrfTokenChecker<E: Endpoint>(E);
+struct CsrfTokenChecker<E: Endpoint>(E, bool);
 
 impl<E: Endpoint> Endpoint for CsrfTokenChecker<E> {
-    type Output = Response;
+    type Output = E::Output;
 
     async fn call(&self, req: Request) -> poem::Result<Self::Output> {
-        let token = req.header("X-Csrf-Token").ok_or_else(|| CsrfError)?;
-
-        match req.data::<CsrfVerifier>() {
-            None => Ok(self.0.call(req).await?.into_response()),
-            Some(csrf_verifier) => {
+        let token = req.header("X-Csrf-Token");
+        match token {
+            None => {
+                if self.1 {
+                    return Err(CsrfError.into());
+                }
+                // will check csrf token in payload later
+                Ok(self.0.call(req).await?)
+            }
+            Some(token) => {
+                let csrf_verifier = <&CsrfVerifier>::from_request_without_body(&req).await?;
                 if csrf_verifier.is_valid(token) {
-                    Ok(self.0.call(req).await?.into_response())
+                    Ok(self.0.call(req).await?)
                 } else {
                     Err(CsrfError.into())
                 }
@@ -72,8 +78,12 @@ impl<E: Endpoint> Endpoint for CsrfTokenChecker<E> {
     }
 }
 
-pub fn csrf_header_check<E: Endpoint>(endpoint: E) -> CsrfTokenChecker<E> {
-    CsrfTokenChecker(endpoint)
+pub fn csrf_header_check<E: Endpoint>(endpoint: E) -> impl IntoEndpoint {
+    CsrfTokenChecker(endpoint, false)
+}
+
+pub fn csrf_payload_check_strict<E: Endpoint>(endpoint: E) -> impl IntoEndpoint {
+    CsrfTokenChecker(endpoint, true)
 }
 
 #[handler]

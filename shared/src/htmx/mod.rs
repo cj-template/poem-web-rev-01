@@ -1,11 +1,12 @@
 pub mod response;
 
 use crate::context::{Context, ContextError, FromContext};
+use crate::csrf::{CsrfError, CsrfVerifierError};
 use crate::htmx::response::{HtmxResponse, HtmxResponseExt};
 use crate::request_cache::RequestCacheExt;
 use error_stack::{Report, ResultExt};
 use poem::http::header;
-use poem::web::Redirect;
+use poem::web::{CsrfVerifier, Redirect};
 use poem::{FromRequest, IntoResponse, Request, RequestBody, Response};
 use serde_json::json;
 use std::ops::Deref;
@@ -125,5 +126,29 @@ impl HtmxHeader {
             return htmx_response.into_response();
         }
         htmx_response.response
+    }
+}
+
+pub struct HtmxCsrfVerifierHeader<'a> {
+    pub htmx_header: HtmxHeader,
+    csrf_verifier: &'a CsrfVerifier,
+}
+
+impl<'a> FromRequest<'a> for HtmxCsrfVerifierHeader<'a> {
+    async fn from_request(req: &'a Request, body: &mut RequestBody) -> poem::Result<Self> {
+        Ok(Self {
+            htmx_header: HtmxHeader::from_request(req, body).await?,
+            csrf_verifier: <&CsrfVerifier>::from_request(req, body).await?,
+        })
+    }
+}
+
+impl HtmxCsrfVerifierHeader<'_> {
+    pub fn verify_csrf(&self, token: &str) -> Result<(), Report<CsrfError>> {
+        if self.htmx_header.request {
+            // already verified in the request header earlier.
+            return Ok(());
+        }
+        self.csrf_verifier.verify(token)
     }
 }
