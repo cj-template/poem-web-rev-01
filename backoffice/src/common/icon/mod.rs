@@ -1,6 +1,6 @@
 use crate::common::embed::AssetHidden;
 use maud::{Markup, PreEscaped};
-use shared::embed::EmbedAsString;
+use shared::utils::embed::EmbedAsString;
 
 #[inline]
 fn get_icon(name: &str) -> Markup {

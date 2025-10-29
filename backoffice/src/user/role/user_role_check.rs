@@ -2,7 +2,7 @@ use crate::user::pointer::user_pointer::UserPointer;
 use crate::user::role::Role;
 use poem::http::StatusCode;
 use poem::{Endpoint, Error, FromRequest, IntoEndpoint, Request};
-use shared::context::Dep;
+use shared::utils::context::Dep;
 
 struct UserRoleCheck<E: Endpoint>(Role, E);
 

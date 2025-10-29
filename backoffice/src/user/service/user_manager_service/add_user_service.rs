@@ -4,9 +4,9 @@ use crate::user::repository::user_manager_repository::UserManagerRepository;
 use cjtoolkit_structured_validator::types::username::IsUsernameTakenAsync;
 use error_stack::{Report, ResultExt};
 use poem::http::StatusCode;
-use shared::context::{Context, ContextError, FromContext};
-use shared::error::ExtraResultExt;
-use shared::password::Password;
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::error::ExtraResultExt;
+use shared::utils::password::Password;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -81,7 +81,7 @@ mod tests {
     use super::*;
     use crate::user::repository::user_manager_repository::UserManagerRepositoryError;
     use mry::Any;
-    use shared::password::PasswordError;
+    use shared::utils::password::PasswordError;
 
     #[test]
     fn test_add_user_success() {

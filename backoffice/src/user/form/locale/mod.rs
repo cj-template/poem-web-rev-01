@@ -1,5 +1,5 @@
 use poem::i18n::Locale;
-use shared::locale::LocaleExt;
+use shared::utils::locale::LocaleExt;
 
 pub struct UserFormLocale {
     pub title_add: String,

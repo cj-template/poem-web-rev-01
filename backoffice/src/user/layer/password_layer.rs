@@ -1,6 +1,6 @@
 use error_stack::Report;
-use shared::context::{Context, ContextError, FromContext};
-use shared::password::{Password, PasswordError, PasswordState};
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::password::{Password, PasswordError, PasswordState};
 
 #[mry::mry]
 pub struct PasswordLayer {}

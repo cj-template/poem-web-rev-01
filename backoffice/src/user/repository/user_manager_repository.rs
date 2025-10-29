@@ -3,8 +3,8 @@ use crate::user::role::Role;
 use error_stack::{Report, ResultExt};
 use poem::http::StatusCode;
 use rusqlite::{Connection, OptionalExtension, named_params};
-use shared::context::{Context, ContextError, FromContext};
-use shared::db::{BorrowConnectionExt, SqliteClient};
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::db::{BorrowConnectionExt, SqliteClient};
 use std::sync::{Arc, MutexGuard};
 use thiserror::Error;
 

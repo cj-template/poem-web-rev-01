@@ -1,6 +1,6 @@
-use crate::context::{Context, ContextError, FromContext};
-use crate::error::LogData;
-use crate::log::repository::error_stack_log_repository::ErrorStackLogRepository;
+use crate::utils::context::{Context, ContextError, FromContext};
+use crate::utils::error::LogData;
+use crate::utils::log::repository::error_stack_log_repository::ErrorStackLogRepository;
 use error_stack::{Report, ResultExt};
 use thiserror::Error;
 
@@ -35,7 +35,7 @@ impl FromContext for ErrorStackLogService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::log::repository::error_stack_log_repository::ErrorStackLogRepositoryError;
+    use crate::utils::log::repository::error_stack_log_repository::ErrorStackLogRepositoryError;
 
     #[test]
     fn test_error_stack_log_service_success() {

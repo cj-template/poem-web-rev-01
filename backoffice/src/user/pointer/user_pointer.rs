@@ -1,8 +1,8 @@
 use crate::user::model::user_model::UserIdContext;
 use crate::user::service::user_check_service::UserCheckService;
 use error_stack::Report;
-use shared::context::{Context, ContextError, FromContext};
-use shared::request_cache::RequestCacheExt;
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::request_cache::RequestCacheExt;
 use std::ops::Deref;
 use std::sync::Arc;
 

@@ -2,8 +2,8 @@ use crate::stack::model::stack_model::{ListStackModel, StackModel};
 use crate::stack::repository::stack_repository::StackRepository;
 use error_stack::{Report, ResultExt};
 use poem::http::StatusCode;
-use shared::context::{Context, ContextError, FromContext};
-use shared::error::ExtraResultExt;
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::error::ExtraResultExt;
 use std::sync::Arc;
 use thiserror::Error;
 

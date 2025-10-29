@@ -14,12 +14,12 @@ use poem::session::Session;
 use poem::web::cookie::{Cookie, CookieJar};
 use poem::web::{CsrfToken, CsrfVerifier, Redirect};
 use poem::{IntoResponse, Response, Route, get, handler};
-use shared::adapter::unified;
-use shared::context::Dep;
-use shared::cookie_builders::CookieBuilderExt;
-use shared::csrf::{CsrfError, CsrfTokenHtml, CsrfVerifierError};
-use shared::flash::{Flash, FlashMessage};
-use shared::query_string::form::FormQs;
+use shared::utils::adapter::unified;
+use shared::utils::context::Dep;
+use shared::utils::cookie_builders::CookieBuilderExt;
+use shared::utils::csrf::{CsrfError, CsrfTokenHtml, CsrfVerifierError};
+use shared::utils::flash::{Flash, FlashMessageExt};
+use shared::utils::query_string::form::FormQs;
 
 pub const LOGIN_ROUTE: &str = "/user-login";
 

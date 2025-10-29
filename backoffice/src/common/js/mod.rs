@@ -1,6 +1,6 @@
 use crate::common::embed::AssetHidden;
 use maud::{Markup, PreEscaped, html};
-use shared::embed::EmbedAsString;
+use shared::utils::embed::EmbedAsString;
 
 #[inline]
 fn js_debug_prod(debug: &str, prod: &str) -> String {

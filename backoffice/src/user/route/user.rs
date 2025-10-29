@@ -18,13 +18,13 @@ use poem::i18n::{I18NArgs, Locale};
 use poem::session::Session;
 use poem::web::{CsrfToken, Path, Redirect};
 use poem::{Error, IntoResponse, Response, Route, get, handler};
-use shared::context::Dep;
-use shared::csrf::{CsrfTokenHtml, csrf_header_check};
-use shared::error::{ExtraResultExt, FromErrorStack};
-use shared::flash::{Flash, FlashMessage};
-use shared::htmx::{HtmxCsrfVerifierHeader, HtmxHeader};
-use shared::locale::LocaleExt;
-use shared::query_string::form::FormQs;
+use shared::utils::context::Dep;
+use shared::utils::csrf::{CsrfTokenHtml, csrf_header_check};
+use shared::utils::error::{ExtraResultExt, FromErrorStack};
+use shared::utils::flash::{Flash, FlashMessageExt};
+use shared::utils::htmx::{HtmxCsrfVerifierHeader, HtmxHeader};
+use shared::utils::locale::LocaleExt;
+use shared::utils::query_string::form::FormQs;
 
 pub const USER_ROUTE: &str = "/user";
 

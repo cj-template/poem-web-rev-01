@@ -1,7 +1,7 @@
-use crate::config::ConfigPointer;
-use crate::context::{Context, ContextError, FromContext};
-use crate::error::{ExtraResultExt, FromIntoStackError, LogItExt};
-use crate::password::Password;
+use crate::utils::config::ConfigPointer;
+use crate::utils::context::{Context, ContextError, FromContext};
+use crate::utils::error::{ExtraResultExt, FromIntoStackError, LogItExt};
+use crate::utils::password::Password;
 use error_stack::{Report, ResultExt};
 use poem::http::StatusCode;
 use rusqlite::{Connection, named_params};

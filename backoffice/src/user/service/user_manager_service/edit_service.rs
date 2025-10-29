@@ -4,7 +4,7 @@ use crate::user::repository::user_manager_repository::UserManagerRepository;
 use cjtoolkit_structured_validator::types::username::IsUsernameTakenAsync;
 use error_stack::{Report, ResultExt};
 use poem::http::StatusCode;
-use shared::context::{Context, ContextError, FromContext};
+use shared::utils::context::{Context, ContextError, FromContext};
 use thiserror::Error;
 
 #[derive(Debug, Error)]

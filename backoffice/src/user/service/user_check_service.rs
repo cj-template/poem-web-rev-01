@@ -3,7 +3,7 @@ use crate::user::model::user_model::UserIdContext;
 use crate::user::repository::user_repository::UserRepository;
 use crate::user::role::Role;
 use error_stack::Report;
-use shared::context::{Context, ContextError, FromContext};
+use shared::utils::context::{Context, ContextError, FromContext};
 
 pub struct UserCheckService {
     user_repository: UserRepository,

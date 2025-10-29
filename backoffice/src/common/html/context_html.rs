@@ -8,10 +8,10 @@ use crate::user::route::user::USER_ROUTE;
 use error_stack::Report;
 use maud::{Markup, PreEscaped, html};
 use poem::i18n::Locale;
-use shared::context::{Context, ContextError, FromContext};
-use shared::flash::{Flash, FlashMessageHtml};
-use shared::htmx::HtmxHeader;
-use shared::locale::LocaleExt;
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::flash::{Flash, FlashMessageHtmlExt};
+use shared::utils::htmx::HtmxHeader;
+use shared::utils::locale::LocaleExt;
 use std::sync::RwLock;
 
 pub struct NavigationItem {

@@ -1,7 +1,7 @@
 use crate::user::model::user_manager_model::ListUser;
 use crate::user::repository::user_manager_repository::UserManagerRepository;
 use error_stack::Report;
-use shared::context::{Context, ContextError, FromContext};
+use shared::utils::context::{Context, ContextError, FromContext};
 use std::sync::Arc;
 
 pub struct ListUserService {

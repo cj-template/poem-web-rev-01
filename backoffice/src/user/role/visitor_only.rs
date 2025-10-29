@@ -4,7 +4,7 @@ use crate::user::route::login::LOGIN_ROUTE;
 use poem::http::StatusCode;
 use poem::web::Redirect;
 use poem::{Endpoint, Error, FromRequest, IntoEndpoint, IntoResponse, Request};
-use shared::context::Dep;
+use shared::utils::context::Dep;
 
 struct VisitorOnly<E: Endpoint>(E);
 

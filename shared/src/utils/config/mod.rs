@@ -1,4 +1,4 @@
-use crate::context::{Context, ContextError, FromContext};
+use crate::utils::context::{Context, ContextError, FromContext};
 use error_stack::{FutureExt, Report, ResultExt};
 use figment::providers::{Format, Serialized, Toml};
 use figment::{Figment, Profile};
@@ -57,7 +57,10 @@ impl Config {
                 )
                 .nested(),
             )
-            .select(Profile::from_env_or(format!("{}_PROFILE", name_case_case_upper).as_str(), "default"))
+            .select(Profile::from_env_or(
+                format!("{}_PROFILE", name_case_case_upper).as_str(),
+                "default",
+            ))
     }
 
     fn parse() -> Result<Self, Report<ConfigError>> {

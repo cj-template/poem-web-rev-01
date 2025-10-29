@@ -1,9 +1,9 @@
 use crate::common::embed::AssetFileEndPoint;
 use crate::common::html::context_html::ContextHtmlBuilder;
 use crate::user::role::visitor_only::visitor_redirect;
-use maud::{html, Markup};
-use poem::{get, handler, Route};
-use shared::context::Dep;
+use maud::{Markup, html};
+use poem::{Route, get, handler};
+use shared::utils::context::Dep;
 
 #[handler]
 pub async fn home_page(Dep(context_html_builder): Dep<ContextHtmlBuilder>) -> Markup {

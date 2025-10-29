@@ -1,4 +1,4 @@
-use crate::error::FromErrorStack;
+use crate::utils::error::FromErrorStack;
 use error_stack::Report;
 use poem::{FromRequest, Request, RequestBody};
 use thiserror::Error;

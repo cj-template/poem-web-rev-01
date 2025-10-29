@@ -8,10 +8,10 @@ use maud::{Markup, html};
 use poem::session::Session;
 use poem::web::{Path, Redirect};
 use poem::{Response, Route, get, handler};
-use shared::context::Dep;
-use shared::error::FromErrorStack;
-use shared::flash::{Flash, FlashMessage};
-use shared::htmx::HtmxHeader;
+use shared::utils::context::Dep;
+use shared::utils::error::FromErrorStack;
+use shared::utils::flash::{Flash, FlashMessageExt};
+use shared::utils::htmx::HtmxHeader;
 
 pub const STACK_ROUTE: &str = "/stack";
 

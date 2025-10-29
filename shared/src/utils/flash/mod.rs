@@ -1,6 +1,6 @@
-use crate::context::{Context, ContextError, FromContext};
+use crate::utils::context::{Context, ContextError, FromContext};
 use error_stack::Report;
-use maud::{html, Markup};
+use maud::{Markup, html};
 use poem::session::Session;
 use serde::{Deserialize, Serialize};
 
@@ -43,11 +43,11 @@ impl Flash {
     }
 }
 
-pub trait FlashMessageHtml {
+pub trait FlashMessageHtmlExt {
     fn flash_message_html(&self) -> Markup;
 }
 
-impl FlashMessageHtml for Option<Flash> {
+impl FlashMessageHtmlExt for Option<Flash> {
     fn flash_message_html(&self) -> Markup {
         match self {
             None => {
@@ -58,13 +58,13 @@ impl FlashMessageHtml for Option<Flash> {
     }
 }
 
-pub trait FlashMessage {
+pub trait FlashMessageExt {
     fn flash(&self, flash: Flash);
 
     fn get_flash(&self) -> Option<Flash>;
 }
 
-impl FlashMessage for Session {
+impl FlashMessageExt for Session {
     fn flash(&self, flash: Flash) {
         self.set("flash", flash)
     }

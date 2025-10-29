@@ -4,9 +4,9 @@ use crate::user::model::user_manager_model::FetchUser;
 use crate::user::repository::user_manager_repository::UserManagerRepository;
 use error_stack::{Report, ResultExt};
 use poem::http::StatusCode;
-use shared::context::{Context, ContextError, FromContext};
-use shared::error::ExtraResultExt;
-use shared::password::Password;
+use shared::utils::context::{Context, ContextError, FromContext};
+use shared::utils::error::ExtraResultExt;
+use shared::utils::password::Password;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -87,7 +87,7 @@ mod tests {
         use super::*;
         use crate::user::repository::user_manager_repository::UserManagerRepositoryError;
         use mry::Any;
-        use shared::password::PasswordError;
+        use shared::utils::password::PasswordError;
 
         #[test]
         fn test_submit_success() {

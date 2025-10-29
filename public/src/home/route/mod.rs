@@ -1,9 +1,9 @@
 use crate::common::embed::AssetFileEndPoint;
 use crate::common::html::HtmlBuilder;
-use maud::{html, Markup};
+use maud::{Markup, html};
 use poem::i18n::Locale;
 use poem::{get, handler};
-use shared::locale::LocaleExt;
+use shared::utils::locale::LocaleExt;
 
 #[handler]
 async fn home(locale: Locale) -> Markup {

@@ -16,17 +16,17 @@ use poem::listener::TcpListener;
 use poem::middleware::{CatchPanic, CookieJarManager, Csrf};
 use poem::session::{CookieConfig, CookieSession};
 use poem::{EndpointExt, IntoResponse, Server};
-use shared::config::Config;
-use shared::csrf::{CSRF_PATH, route_csrf};
-use shared::embed::enforce_min_js_on_prod;
-use shared::error::boot_error::MainError;
-use shared::log::log_poem_error;
-use shared::request_cache::init_request_cache;
+use shared::utils::config::Config;
+use shared::utils::csrf::{CSRF_PATH, route_csrf};
+use shared::utils::embed::enforce_min_js_on_prod;
+use shared::utils::error::boot_error::MainError;
+use shared::utils::log::log_poem_error;
+use shared::utils::request_cache::init_request_cache;
 use user::route::login::LOGIN_ROUTE;
 
 pub mod export {
-    pub use shared::error::boot_error::MainError;
-    pub use shared::log::init_log;
+    pub use shared::utils::error::boot_error::MainError;
+    pub use shared::utils::log::init_log;
 }
 
 pub async fn boot() -> Result<(), Report<MainError>> {

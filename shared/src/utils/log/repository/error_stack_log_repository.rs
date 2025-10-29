@@ -1,5 +1,5 @@
-use crate::context::{Context, ContextError, FromContext};
-use crate::db::{BorrowConnectionExt, SqliteClient};
+use crate::utils::context::{Context, ContextError, FromContext};
+use crate::utils::db::{BorrowConnectionExt, SqliteClient};
 use error_stack::{Report, ResultExt};
 use rusqlite::{Connection, named_params};
 use std::sync::MutexGuard;

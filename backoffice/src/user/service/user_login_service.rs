@@ -2,7 +2,7 @@ use crate::user::LOGIN_TOKEN_COOKIE_NAME;
 use crate::user::layer::password_layer::PasswordLayer;
 use crate::user::repository::user_repository::UserRepository;
 use error_stack::Report;
-use shared::context::{Context, ContextError, FromContext};
+use shared::utils::context::{Context, ContextError, FromContext};
 use uuid::Uuid;
 
 pub struct UserLoginService {
@@ -77,7 +77,7 @@ mod tests {
     use crate::user::model::user_model::IdPassword;
     use crate::user::repository::user_repository::UserRepositoryError;
     use mry::Any;
-    use shared::password::PasswordState;
+    use shared::utils::password::PasswordState;
 
     #[test]
     fn test_validate_login_success() {

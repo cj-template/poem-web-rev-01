@@ -1,5 +1,5 @@
 use poem::i18n::{I18NArgs, Locale};
-use shared::locale::LocaleExt;
+use shared::utils::locale::LocaleExt;
 
 pub struct TopBuildLocale {
     pub hello: String,

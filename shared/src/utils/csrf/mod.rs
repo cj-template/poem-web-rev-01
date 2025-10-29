@@ -3,7 +3,7 @@ use maud::{Markup, html};
 use poem::error::ResponseError;
 use poem::http::StatusCode;
 use poem::web::{CsrfToken, CsrfVerifier, Json};
-use poem::{Endpoint, FromRequest, IntoEndpoint, IntoResponse, Request, Response, get, handler};
+use poem::{Endpoint, FromRequest, IntoResponse, Request, Response, get, handler};
 use serde_json::{Value, json};
 use std::error::Error;
 use thiserror::Error;
@@ -78,11 +78,11 @@ impl<E: Endpoint> Endpoint for CsrfTokenChecker<E> {
     }
 }
 
-pub fn csrf_header_check<E: Endpoint>(endpoint: E) -> impl IntoEndpoint {
+pub fn csrf_header_check<E: Endpoint>(endpoint: E) -> impl Endpoint {
     CsrfTokenChecker(endpoint, false)
 }
 
-pub fn csrf_payload_check_strict<E: Endpoint>(endpoint: E) -> impl IntoEndpoint {
+pub fn csrf_payload_check_strict<E: Endpoint>(endpoint: E) -> impl Endpoint {
     CsrfTokenChecker(endpoint, true)
 }
 

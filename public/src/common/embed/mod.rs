@@ -1,6 +1,6 @@
 use poem::endpoint::{EmbeddedFileEndpoint, EmbeddedFilesEndpoint};
 use rust_embed::Embed;
-use shared::embed::EmbedAsString;
+use shared::utils::embed::EmbedAsString;
 use std::collections::HashMap;
 
 pub const EMBED_PATH: &'static str = "/assets/";
