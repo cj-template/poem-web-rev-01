@@ -91,7 +91,7 @@ pub fn csrf_header_check<E: Endpoint>(endpoint: E) -> impl Endpoint {
     CsrfTokenChecker(endpoint, false)
 }
 
-pub fn csrf_payload_check_strict<E: Endpoint>(endpoint: E) -> impl Endpoint {
+pub fn csrf_header_check_strict<E: Endpoint>(endpoint: E) -> impl Endpoint {
     CsrfTokenChecker(endpoint, true)
 }
 
