@@ -19,12 +19,11 @@ use poem::session::Session;
 use poem::web::{CsrfToken, Path, Redirect};
 use poem::{Error, IntoResponse, Response, Route, get, handler};
 use shared::utils::context::Dep;
-use shared::utils::csrf::{CsrfTokenHtml, csrf_header_check};
+use shared::utils::csrf::{CsrfFormQs, CsrfTokenHtml, csrf_header_check};
 use shared::utils::error::{ExtraResultExt, FromErrorStack};
 use shared::utils::flash::{Flash, FlashMessageExt};
-use shared::utils::htmx::{HtmxCsrfVerifierHeader, HtmxHeader};
+use shared::utils::htmx::HtmxHeader;
 use shared::utils::locale::LocaleExt;
-use shared::utils::query_string::form::FormQs;
 
 pub const USER_ROUTE: &str = "/user";
 
@@ -134,14 +133,11 @@ async fn edit_user_post(
     Dep(context_html_builder): Dep<ContextHtmlBuilder>,
     Dep(edit_user_service): Dep<EditUserService>,
     Path(user_id): Path<i64>,
-    FormQs(edit_user_form): FormQs<EditUserForm>,
+    CsrfFormQs(edit_user_form): CsrfFormQs<EditUserForm>,
     session: &Session,
-    htmx_csrf_verify_header: HtmxCsrfVerifierHeader<'_>,
+    htmx_header: HtmxHeader,
     csrf_token: &CsrfToken,
 ) -> poem::Result<Response> {
-    htmx_csrf_verify_header
-        .verify_csrf(edit_user_form.csrf_token.as_str())
-        .map_err(Error::from_error_stack)?;
     let subject_user = edit_user_service
         .fetch_user(user_id)
         .map_err(Error::from_error_stack)?;
@@ -163,7 +159,7 @@ async fn edit_user_post(
                     I18NArgs::from((("user_id", user_id),)),
                 ),
             });
-            Ok(htmx_csrf_verify_header.htmx_header.do_location(
+            Ok(htmx_header.do_location(
                 Redirect::see_other(USER_ROUTE.to_owned() + "/"),
                 "#main-content",
             ))
@@ -214,14 +210,11 @@ async fn edit_user_password_post(
     Dep(context_html_builder): Dep<ContextHtmlBuilder>,
     Dep(edit_password_service): Dep<EditPasswordService>,
     Path(user_id): Path<i64>,
-    FormQs(edit_password_manager_form): FormQs<EditPasswordManagerForm>,
+    CsrfFormQs(edit_password_manager_form): CsrfFormQs<EditPasswordManagerForm>,
     session: &Session,
-    htmx_csrf_verify_header: HtmxCsrfVerifierHeader<'_>,
+    htmx_header: HtmxHeader,
     csrf_token: &CsrfToken,
 ) -> poem::Result<Response> {
-    htmx_csrf_verify_header
-        .verify_csrf(edit_password_manager_form.csrf_token.as_str())
-        .map_err(Error::from_error_stack)?;
     let subject_user = edit_password_service
         .fetch_user(user_id)
         .map_err(Error::from_error_stack)?;
@@ -240,7 +233,7 @@ async fn edit_user_password_post(
                     I18NArgs::from((("user_id", user_id),)),
                 ),
             });
-            Ok(htmx_csrf_verify_header.htmx_header.do_location(
+            Ok(htmx_header.do_location(
                 Redirect::see_other(USER_ROUTE.to_owned() + "/"),
                 "#main-content",
             ))
@@ -279,14 +272,11 @@ async fn add_user_password_get(
 async fn add_user_password_post(
     Dep(context_html_builder): Dep<ContextHtmlBuilder>,
     Dep(add_user_service): Dep<AddUserService>,
-    FormQs(add_user_form): FormQs<AddUserForm>,
+    CsrfFormQs(add_user_form): CsrfFormQs<AddUserForm>,
     session: &Session,
-    htmx_csrf_verify_header: HtmxCsrfVerifierHeader<'_>,
+    htmx_header: HtmxHeader,
     csrf_token: &CsrfToken,
 ) -> poem::Result<Response> {
-    htmx_csrf_verify_header
-        .verify_csrf(add_user_form.csrf_token.as_str())
-        .map_err(Error::from_error_stack)?;
     let validated_result = add_user_form.as_validated(&add_user_service).await.0;
     let l = &context_html_builder.locale;
     match validated_result {
@@ -303,7 +293,7 @@ async fn add_user_password_post(
                     I18NArgs::from((("username", validated.username.as_str()),)),
                 ),
             });
-            Ok(htmx_csrf_verify_header.htmx_header.do_location(
+            Ok(htmx_header.do_location(
                 Redirect::see_other(USER_ROUTE.to_owned() + "/"),
                 "#main-content",
             ))

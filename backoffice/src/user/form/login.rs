@@ -8,7 +8,6 @@ use serde::Deserialize;
 pub struct UserLoginForm {
     pub username: String,
     pub password: String,
-    pub csrf_token: String,
 }
 
 impl UserLoginForm {

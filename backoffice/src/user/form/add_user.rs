@@ -20,7 +20,6 @@ pub struct AddUserForm {
     pub password: String,
     pub password_confirm: String,
     pub role: Role,
-    pub csrf_token: String,
 }
 
 impl AddUserForm {

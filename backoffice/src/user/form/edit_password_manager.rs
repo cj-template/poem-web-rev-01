@@ -14,7 +14,6 @@ use std::sync::Arc;
 pub struct EditPasswordManagerForm {
     pub password: String,
     pub password_confirm: String,
-    pub csrf_token: String,
 }
 
 impl EditPasswordManagerForm {

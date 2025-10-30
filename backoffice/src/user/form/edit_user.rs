@@ -17,7 +17,6 @@ use std::sync::Arc;
 pub struct EditUserForm {
     pub username: String,
     pub role: Role,
-    pub csrf_token: String,
 }
 
 impl EditUserForm {
