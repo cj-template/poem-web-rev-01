@@ -10,6 +10,7 @@ use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
 use std::error::Error;
+use std::ops::Deref;
 use thiserror::Error;
 
 pub const CSRF_PATH: &'static str = "/csrf/";
@@ -112,6 +113,14 @@ struct CsrfFormBody<T> {
 
 pub struct CsrfForm<T>(pub T);
 
+impl<T> Deref for CsrfForm<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 impl<'a, T: DeserializeOwned> FromRequest<'a> for CsrfForm<T> {
     async fn from_request(req: &'a Request, body: &mut RequestBody) -> poem::Result<Self> {
         if req.data::<CsrfHeaderValid>().is_some() {
@@ -129,6 +138,14 @@ impl<'a, T: DeserializeOwned> FromRequest<'a> for CsrfForm<T> {
 }
 
 pub struct CsrfFormQs<T>(pub T);
+
+impl<T> Deref for CsrfFormQs<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl<'a, T: DeserializeOwned> FromRequest<'a> for CsrfFormQs<T> {
     async fn from_request(req: &'a Request, body: &mut RequestBody) -> poem::Result<Self> {
