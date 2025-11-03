@@ -17,24 +17,27 @@ impl Flash {
         match self {
             Self::Success { msg } => {
                 html! {
-                   div .flash-message .flash-message-success hx-get="/noop" hx-swap="outerHTML swap:5s"
-                        hx-target="this" hx-trigger="revealed delay:3s" {
+                   div .flash-message .flash-message-success
+                        x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)"
+                        x-show="show" "x-transition.duration.400ms" {
                        (msg)
                    }
                 }
             }
             Self::Error { msg } => {
                 html! {
-                   div .flash-message .flash-message-error hx-get="/noop" hx-swap="outerHTML swap:5s"
-                        hx-target="this" hx-trigger="revealed delay:3s" {
+                   div .flash-message .flash-message-error
+                        x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)"
+                        x-show="show" "x-transition.duration.400ms" {
                        (msg)
                    }
                 }
             }
             Self::Warning { msg } => {
                 html! {
-                   div .flash-message .flash-message-warning hx-get="/noop" hx-swap="outerHTML swap:5s"
-                        hx-target="this" hx-trigger="revealed delay:3s" {
+                   div .flash-message .flash-message-warning
+                        x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)"
+                        x-show="show" "x-transition.duration.400ms" {
                        (msg)
                    }
                 }

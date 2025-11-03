@@ -25,17 +25,9 @@ pub async fn home_page(Dep(context_html_builder): Dep<ContextHtmlBuilder>) -> Ma
         .build()
 }
 
-#[handler]
-async fn noop() -> () {
-    ()
-}
-
 pub fn home_route() -> Route {
-    Route::new()
-        .at("/", visitor_redirect(get(home_page)))
-        .at(
-            "/favicon.ico",
-            AssetFileEndPoint::new("favicon/favicon.ico"),
-        )
-        .at("/noop", get(noop))
+    Route::new().at("/", visitor_redirect(get(home_page))).at(
+        "/favicon.ico",
+        AssetFileEndPoint::new("favicon/favicon.ico"),
+    )
 }

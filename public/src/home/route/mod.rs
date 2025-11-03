@@ -25,17 +25,9 @@ async fn home(locale: Locale) -> Markup {
     .build()
 }
 
-#[handler]
-async fn noop() -> () {
-    ()
-}
-
 pub fn home_route() -> poem::Route {
-    poem::Route::new()
-        .at("/", get(home))
-        .at(
-            "/favicon.ico",
-            AssetFileEndPoint::new("favicon/favicon.ico"),
-        )
-        .at("/noop", get(noop))
+    poem::Route::new().at("/", get(home)).at(
+        "/favicon.ico",
+        AssetFileEndPoint::new("favicon/favicon.ico"),
+    )
 }
