@@ -187,7 +187,7 @@ impl ContextHtmlBuilder {
                             (flash.flash_message_html())
                         }
                         div #command hx-swap-oob="true" {
-                            span #tag-update data-tag=(current_tag) { }
+                            span x-init="await updateNavActive($el)" data-tag=(current_tag) { }
                         }
                         div #footer hx-swap-oob="true" {
                             (footer)

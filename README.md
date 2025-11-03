@@ -10,6 +10,8 @@ Template for poem web.
     * https://maud.lambda.xyz/
 * Htmx
     * http://htmx.org/
+* AlpineJS
+    * https://alpinejs.dev/
 * Rusqlite
     * https://github.com/rusqlite/rusqlite
 * My Very Own CjToolkit Structured Validator
