@@ -14,11 +14,12 @@ pub enum Flash {
 
 impl Flash {
     pub fn as_html(&self) -> Markup {
+        let js_date = include_str!("_js/flash_data.js");
         match self {
             Self::Success { msg } => {
                 html! {
                    div .flash-message .flash-message-success
-                        x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)"
+                        x-data=(js_date) x-init="start()"
                         x-show="show" "x-transition.duration.400ms" {
                        (msg)
                    }
@@ -27,7 +28,7 @@ impl Flash {
             Self::Error { msg } => {
                 html! {
                    div .flash-message .flash-message-error
-                        x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)"
+                        x-data=(js_date) x-init="start()"
                         x-show="show" "x-transition.duration.400ms" {
                        (msg)
                    }
@@ -36,7 +37,7 @@ impl Flash {
             Self::Warning { msg } => {
                 html! {
                    div .flash-message .flash-message-warning
-                        x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)"
+                        x-data=(js_date) x-init="start()"
                         x-show="show" "x-transition.duration.400ms" {
                        (msg)
                    }
