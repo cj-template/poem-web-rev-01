@@ -26,7 +26,7 @@ Template for poem web.
 To use the template, clone this repository with cargo generate.
 
 ```sh
-cargo generate --git https://github.com/cj-template/poem-web-rev-01
+cargo generate --git https://github.com/rusty-template/poem-web-rev-01.git
 ```
 
 It will generate a project with the readme and images removed.
