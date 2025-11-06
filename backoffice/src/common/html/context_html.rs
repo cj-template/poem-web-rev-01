@@ -190,7 +190,7 @@ impl ContextHtmlBuilder {
                             span x-init="await $store.nav.updateActiveByElement($el)"
                                 data-tag=(current_tag) { }
                         }
-                        span hidden hx-swap-oob="beforeend:#footer" {
+                        div #footer hx-swap-oob="true" {
                             (footer)
                         }
                     };
