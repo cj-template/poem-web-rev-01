@@ -187,7 +187,7 @@ impl ContextHtmlBuilder {
                             (flash.flash_message_html())
                         }
                         span hidden hx-swap-oob="beforeend:#command" {
-                            span x-init="await $store.nav.updateActiveByElement($el)"
+                            span hidden x-init="await $store.nav.updateActiveByElement($el)"
                                 data-tag=(current_tag) { }
                         }
                         div #footer hx-swap-oob="true" {

@@ -29,10 +29,8 @@ impl CsrfTokenHtml for CsrfToken {
 
     fn as_html_command(&self) -> Markup {
         html! {
-            span hidden hx-swap-oob="beforeend:#command" {
-                span x-init="$store.csrf.updateTokenByElement($el)"
-                data-csrf=(self.0) { }
-            }
+            span hidden x-init="$store.csrf.updateTokenByElement($el)"
+            data-csrf=(self.0) { }
         }
     }
 }
