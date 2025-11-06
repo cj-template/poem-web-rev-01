@@ -17,7 +17,6 @@ use poem::middleware::{CatchPanic, CookieJarManager, Csrf};
 use poem::session::{CookieConfig, CookieSession};
 use poem::{EndpointExt, IntoResponse, Server};
 use shared::utils::config::Config;
-use shared::utils::csrf::{CSRF_PATH, route_csrf};
 use shared::utils::embed::enforce_min_js_on_prod;
 use shared::utils::error::boot_error::MainError;
 use shared::utils::log::log_poem_error;
@@ -39,7 +38,6 @@ pub async fn boot() -> Result<(), Report<MainError>> {
     let route = route
         .nest(LOGIN_ROUTE, login_route())
         .nest(USER_ROUTE, visitor_redirect(user_route()))
-        .nest(CSRF_PATH, route_csrf())
         .nest(STACK_ROUTE, visitor_redirect(must_be_root(stack_route())))
         .nest(
             EMBED_PATH,

@@ -4,25 +4,35 @@ use error_stack::{Report, ResultExt};
 use maud::{Markup, html};
 use poem::error::ResponseError;
 use poem::http::StatusCode;
-use poem::web::{CsrfToken, CsrfVerifier, Form, Json};
-use poem::{Endpoint, FromRequest, IntoResponse, Request, RequestBody, Response, get, handler};
+use poem::web::{CsrfToken, CsrfVerifier, Form};
+use poem::{Endpoint, FromRequest, IntoResponse, Request, RequestBody, Response};
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
-use serde_json::{Value, json};
 use std::error::Error;
 use std::ops::Deref;
 use thiserror::Error;
 
-pub const CSRF_PATH: &'static str = "/csrf/";
-
 pub trait CsrfTokenHtml {
-    fn as_html(&self) -> Markup;
+    fn as_html_input(&self) -> Markup;
+
+    fn as_html_command(&self) -> Markup;
 }
 
 impl CsrfTokenHtml for CsrfToken {
-    fn as_html(&self) -> Markup {
+    fn as_html_input(&self) -> Markup {
         html! {
-            input type="hidden" name="csrf_token" value=(self.0);
+            input type="hidden" name="csrf_token" value=(self.0)
+                x-data data-csrf=(self.0) x-model="$store.csrf.token"
+                x-init="$store.csrf.updateTokenByElement($el, false)";
+        }
+    }
+
+    fn as_html_command(&self) -> Markup {
+        html! {
+            span hidden hx-swap-oob="beforeend:#command" {
+                span x-init="$store.csrf.updateTokenByElement($el)"
+                data-csrf=(self.0) { }
+            }
         }
     }
 }
@@ -93,15 +103,6 @@ pub fn csrf_header_check<E: Endpoint>(endpoint: E) -> impl Endpoint {
 
 pub fn csrf_header_check_strict<E: Endpoint>(endpoint: E) -> impl Endpoint {
     CsrfTokenChecker(endpoint, true)
-}
-
-#[handler]
-async fn fetch_csrf_token(token: &CsrfToken) -> Json<Value> {
-    Json(json!({"token": token.0}))
-}
-
-pub fn route_csrf() -> poem::Route {
-    poem::Route::new().at("/token", get(fetch_csrf_token))
 }
 
 #[derive(Deserialize)]

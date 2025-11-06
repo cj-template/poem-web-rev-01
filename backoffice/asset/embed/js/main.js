@@ -1,85 +1,90 @@
 import htmx from './lib/htmx/htmx.esm.js'
 import Alpine from './lib/alpine/alpine.esm.js'
 
-/**
- * @param {HTMLElement} element
- * @returns {Promise<void>}
- */
-async function formatToLocalTime(element) {
-    let date = new Date(element.innerHTML);
-    if (isNaN(date.getTime()) || date.toString() === "Invalid Date" || date.getTime() === 0) {
-        return;
-    }
-    element.innerHTML = date.toLocaleString();
-}
-
-async function clearNavActive() {
-    let elements = document.getElementsByClassName("nav-item");
-    for (let element of elements) {
-        element.classList.remove("nav-item-active");
-    }
-}
-
-/**
- * @param {HTMLElement} tagUpdateElement
- */
-async function updateNavActive(tagUpdateElement) {
-    clearNavActive().then(function () {
-        if (tagUpdateElement.dataset.tag === undefined || tagUpdateElement.dataset.tag === "") {
-            return;
-        }
-        let tagElement = document.getElementById(tagUpdateElement.dataset.tag);
-        if (tagElement !== null) {
-            tagElement.classList.add("nav-item-active");
-        }
-    }).then(function () {
-        tagUpdateElement.remove();
-    });
-}
-
-let token = "";
-let rotateToken = true;
-
-function refreshCsrfToken() {
-    if (rotateToken) {
-        rotateToken = false;
-        fetch("/csrf/token").then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            token = data.token;
-            updateTokenInput(data.token);
-            return data.token;
-        }).catch(function (error) {
-            console.error(error);
-        });
-    } else {
-        fetchTokenFromInput();
-    }
-}
-
-function updateTokenInput(newToken) {
-    let tokenInputs = document.querySelectorAll("input[name='csrf_token']");
-    for (let tokenInput of tokenInputs) {
-        tokenInput.value = newToken;
-    }
-}
-
-function fetchTokenFromInput() {
-    let tokenInputs = document.querySelectorAll("input[name='csrf_token']");
-    let tokenInput = tokenInputs[0];
-    if (tokenInput !== undefined) {
-        token = tokenInput.value;
-    }
-}
-
-function getCsrfToken() {
-    rotateToken = true;
-    return token;
-}
-
 export function start() {
-    htmx.onLoad(function () {
-        refreshCsrfToken();
+    Alpine.store('util', {
+        /**
+         * @param {HTMLElement} element
+         */
+        formatToLocalTime(element) {
+            let date = new Date(element.innerHTML);
+            if (isNaN(date.getTime()) || date.toString() === "Invalid Date" || date.getTime() === 0) {
+                return;
+            }
+            element.innerHTML = date.toLocaleString();
+        }
+    });
+
+    Alpine.store('nav', {
+        /**
+         * @returns {Promise<void>}
+         */
+        async clearActive() {
+            let elements = document.getElementsByClassName("nav-item");
+            for (let element of elements) {
+                element.classList.remove("nav-item-active");
+            }
+        },
+        /**
+         * @param {string} tag
+         * @returns {Promise<void>}
+         */
+        async updateActive(tag) {
+            await this.clearActive();
+            if (tag === "") {
+                return;
+            }
+            let tagElement = document.getElementById(tag);
+            if (tagElement !== null) {
+                tagElement.classList.add("nav-item-active");
+            }
+        },
+        /**
+         * @param {HTMLElement} element
+         * @returns {Promise<void>}
+         */
+        async updateActiveByElement(element) {
+            if (element.dataset.tag) {
+                await this.updateActive(element.dataset.tag);
+            }
+            element.remove();
+        }
+    });
+
+    Alpine.store('csrf', {
+        token: '',
+        /** @param {string} token */
+        updateToken(token) {
+            if (this.token !== token) {
+                this.token = token;
+            }
+        },
+        /**
+         * @param {HTMLElement} element
+         * @param {boolean} remove
+         */
+        updateTokenByElement(element, remove = true) {
+            if (element.dataset.csrf) {
+                this.updateToken(element.dataset.csrf);
+            }
+            if (remove) {
+                element.remove();
+            }
+        },
+        /**
+         * @param {string} url
+         * @param {Object} options
+         * @returns {Promise<Response>}
+         */
+        fetch(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    'X-Csrf-Token': this.token
+                }
+            });
+        }
     });
 
     htmx.on("htmx:responseError", function (evt) {
@@ -110,15 +115,12 @@ export function start() {
 
     document.body.addEventListener("htmx:configRequest", function (evt) {
         if (evt.detail.verb !== "get" && evt.detail.verb !== "head") {
-            evt.detail.headers["X-Csrf-Token"] = getCsrfToken();
+            evt.detail.headers["X-Csrf-Token"] = Alpine.store('csrf').token;
         }
     });
 
-    window.csrfToken = getCsrfToken;
-    window.updateNavActive = updateNavActive;
-    window.formatToLocalTime = formatToLocalTime;
-
     window.Alpine = Alpine;
+    window.htmx = htmx;
 
     Alpine.start();
 }

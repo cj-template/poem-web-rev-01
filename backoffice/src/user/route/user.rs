@@ -65,14 +65,14 @@ async fn list_users(
                             @if user_id_context.role == Role::Root {
                                 td .action {
                                     a .icon href=(format!("{}/edit/{}", USER_ROUTE, user.id)) title=(&user_locale.user_list_action_edit)
-                                        hx-get=(format!("{}/edit/{}", USER_ROUTE, user.id)) hx-push-url="true" hx-target="#main-content" { (edit_icon) }
+                                        hx-boost="true" hx-push-url="true" hx-target="#main-content" { (edit_icon) }
                                     " "
                                     a .icon href=(format!("{}/edit-password/{}", USER_ROUTE, user.id)) title=(&user_locale.user_list_action_password)
-                                        hx-get=(format!("{}/edit-password/{}", USER_ROUTE, user.id)) hx-push-url="true" hx-target="#main-content" { (password_icon) }
+                                        hx-boost="true" hx-push-url="true" hx-target="#main-content" { (password_icon) }
                                     " "
                                     a .icon hx-confirm=(user_logout_confirm_message(&context_html_builder.locale, &user.username))
                                         href=(format!("{}/sign-out/{}", USER_ROUTE, user.id)) title=(&user_locale.user_list_action_sign_out)
-                                        hx-get=(format!("{}/sign-out/{}", USER_ROUTE, user.id)) hx-push-url="true" hx-target="#main-content" { (flag_icon) }
+                                        hx-boost="true" hx-push-url="true" hx-target="#main-content" { (flag_icon) }
                                 }
                             }
                         }
@@ -82,7 +82,7 @@ async fn list_users(
             @if user_id_context.role == Role::Root {
                 div .text-right .mt-3 {
                     a .inline-block href=(format!("{}/add-user", USER_ROUTE)) title=(&user_locale.user_list_action_add_user)
-                        hx-get=(format!("{}/add-user", USER_ROUTE)) hx-push-url="true" hx-target="#main-content" { (plus_icon()) }
+                        hx-boost="true" hx-push-url="true" hx-target="#main-content" { (plus_icon()) }
                 }
             }
         })
@@ -123,7 +123,7 @@ async fn edit_user_get(
             &context_html_builder,
             None,
             Some(subject_user.username),
-            Some(csrf_token.as_html()),
+            Some(csrf_token.as_html_input()),
         )
         .await)
 }
@@ -173,7 +173,7 @@ async fn edit_user_post(
                         &context_html_builder,
                         Some(errors),
                         Some(subject_user.username),
-                        Some(csrf_token.as_html()),
+                        Some(csrf_token.as_html_input()),
                     )
                     .await,
             )
@@ -200,7 +200,7 @@ async fn edit_user_password_get(
             &context_html_builder,
             None,
             Some(subject_user.username),
-            Some(csrf_token.as_html()),
+            Some(csrf_token.as_html_input()),
         )
         .await)
 }
@@ -247,7 +247,7 @@ async fn edit_user_password_post(
                         &context_html_builder,
                         Some(errors),
                         Some(subject_user.username),
-                        Some(csrf_token.as_html()),
+                        Some(csrf_token.as_html_input()),
                     )
                     .await,
             )
@@ -264,7 +264,11 @@ async fn add_user_password_get(
     let add_user_form = AddUserForm::default();
 
     Ok(add_user_form
-        .as_form_html(&context_html_builder, None, Some(csrf_token.as_html()))
+        .as_form_html(
+            &context_html_builder,
+            None,
+            Some(csrf_token.as_html_input()),
+        )
         .await)
 }
 
@@ -306,7 +310,7 @@ async fn add_user_password_post(
                     .as_form_html(
                         &context_html_builder,
                         Some(errors),
-                        Some(csrf_token.as_html()),
+                        Some(csrf_token.as_html_input()),
                     )
                     .await,
             )

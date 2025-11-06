@@ -31,7 +31,7 @@ async fn login(
         .attach_content(html! {
             h1 .mt-3 { (login_locale.title) }
             form method="post" .form {
-                (csrf_token.as_html())
+                (csrf_token.as_html_input())
                 input .form-item type="text" name="username" placeholder=(login_locale.username) {}
                 input .form-item type="password" name="password" placeholder=(login_locale.password) {}
                 button .btn .btn-sky-blue .mt-3 type="submit" { (login_locale.confirm_button) }

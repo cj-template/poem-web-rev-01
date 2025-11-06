@@ -183,13 +183,14 @@ impl ContextHtmlBuilder {
                     return html! {
                         title { (title) " | App" }
                         (content)
-                        div #alert hx-swap-oob="true" {
+                        span hidden hx-swap-oob="beforeend:#alert" {
                             (flash.flash_message_html())
                         }
-                        div #command hx-swap-oob="true" {
-                            span x-init="await updateNavActive($el)" data-tag=(current_tag) { }
+                        span hidden hx-swap-oob="beforeend:#command" {
+                            span x-init="await $store.nav.updateActiveByElement($el)"
+                                data-tag=(current_tag) { }
                         }
-                        div #footer hx-swap-oob="true" {
+                        span hidden hx-swap-oob="beforeend:#footer" {
                             (footer)
                         }
                     };
@@ -227,9 +228,9 @@ impl ContextHtmlBuilder {
         html! {
             nav .nav-content {
                 div .nav-home {
-                    a href="/" hx-push-url="true" hx-target="#main-content" hx-get="/" { "App" }
+                    a href="/" hx-push-url="true" hx-target="#main-content" hx-boost="true" { "App" }
                 }
-                div .navigation {
+                div .navigation hx-boost="true" {
                     (self.parse_navigation(tag))
                 }
             }
@@ -245,7 +246,7 @@ impl ContextHtmlBuilder {
             let html = if item.tag == tag {
                 html! {
                     div .nav-item .nav-item-active id=(item.tag) {
-                        a href=(item.url) hx-push-url="true" hx-target="#main-content" hx-get=(item.url) {
+                        a href=(item.url) hx-push-url="true" hx-target="#main-content" {
                             span .icon { (item.icon) }
                             (self.locale.text_with_default(item.locale.as_str(), &item.name))
                         }
@@ -254,7 +255,7 @@ impl ContextHtmlBuilder {
             } else {
                 html! {
                     div .nav-item id=(item.tag) {
-                        a href=(item.url) hx-push-url="true" hx-target="#main-content" hx-get=(item.url) {
+                        a href=(item.url) hx-push-url="true" hx-target="#main-content" {
                             span .icon { (item.icon) }
                             (self.locale.text_with_default(item.locale.as_str(), &item.name))
                         }
@@ -273,7 +274,7 @@ impl ContextHtmlBuilder {
             div .top-bar-user {
                 @if user_context.role >= Role::User {
                     a href=(USER_ROUTE.to_owned() + "/")
-                        hx-push-url="true" hx-target="#main-content" hx-get=(USER_ROUTE.to_owned() + "/") { (top_build_locale.hello) }
+                        hx-push-url="true" hx-target="#main-content" hx-boost="true" { (top_build_locale.hello) }
                     a class="mt-1.5!" href=(LOGIN_ROUTE.to_owned() + "/logout") {
                         span .icon title=(top_build_locale.hello_logout) { (user_minus_icon()) }
                     }

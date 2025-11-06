@@ -1,49 +1,41 @@
 import htmx from './lib/htmx/htmx.esm.js'
 import Alpine from './lib/alpine/alpine.esm.js'
 
-let token = "";
-let rotateToken = true;
-
-function refreshCsrfToken() {
-    if (rotateToken) {
-        rotateToken = false;
-        fetch("/csrf/token").then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            token = data.token;
-            updateTokenInput(data.token);
-            return data.token;
-        }).catch(function (error) {
-            console.error(error);
-        });
-    } else {
-        fetchTokenFromInput();
-    }
-}
-
-function updateTokenInput(newToken) {
-    let tokenInputs = document.querySelectorAll("input[name='csrf_token']");
-    for (let tokenInput of tokenInputs) {
-        tokenInput.value = newToken;
-    }
-}
-
-function fetchTokenFromInput() {
-    let tokenInputs = document.querySelectorAll("input[name='csrf_token']");
-    let tokenInput = tokenInputs[0];
-    if (tokenInput !== undefined) {
-        token = tokenInput.value;
-    }
-}
-
-function getCsrfToken() {
-    rotateToken = true;
-    return token;
-}
-
 export function start() {
-    htmx.onLoad(function () {
-        refreshCsrfToken();
+    Alpine.store('csrf', {
+        token: '',
+        /** @param {string} token */
+        updateToken(token) {
+            if (this.token !== token) {
+                this.token = token;
+            }
+        },
+        /**
+         * @param {HTMLElement} element
+         * @param {boolean} remove
+         */
+        updateTokenByElement(element, remove = true) {
+            if (element.dataset.csrf) {
+                this.updateToken(element.dataset.csrf);
+            }
+            if (remove) {
+                element.remove();
+            }
+        },
+        /**
+         * @param {string} url
+         * @param {Object} options
+         * @returns {Promise<Response>}
+         */
+        fetch(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    'X-Csrf-Token': this.token
+                }
+            });
+        }
     });
 
     htmx.on("htmx:responseError", function (evt) {
@@ -74,12 +66,12 @@ export function start() {
 
     document.body.addEventListener("htmx:configRequest", function (evt) {
         if (evt.detail.verb !== "get" && evt.detail.verb !== "head") {
-            evt.detail.headers["X-Csrf-Token"] = getCsrfToken();
+            evt.detail.headers["X-Csrf-Token"] = Alpine.store('csrf').token;
         }
     });
 
-    window.csrfToken = getCsrfToken;
-    
     window.Alpine = Alpine;
+    window.htmx = htmx;
+
     Alpine.start();
 }

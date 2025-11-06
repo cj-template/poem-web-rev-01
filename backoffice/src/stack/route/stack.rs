@@ -46,10 +46,10 @@ fn list_error_stack(
                             td { (error_stack.id) }
                             td { (error_stack.error_name) }
                             td { (error_stack.error_summary) }
-                            td x-init="await formatToLocalTime($el)" { (error_stack.reported_at.to_rfc3339()) }
+                            td x-init="$store.util.formatToLocalTime($el)" { (error_stack.reported_at.to_rfc3339()) }
                             td .action {
                                 a .icon href=(format!("{}/view/{}", STACK_ROUTE, error_stack.id))
-                                    title=(lc.action_details) hx-get=(format!("{}/view/{}", STACK_ROUTE, error_stack.id))
+                                    title=(lc.action_details) hx-boost="true"
                                     hx-push-url="true" hx-target="#main-content" { (open_icon) }
                             }
                         }
@@ -82,7 +82,7 @@ fn fetch_error_stack_detail(
         .attach_content(html! {
             h1 { (title) }
             h2 { (lc.head_reported) }
-            pre .pre x-init="await formatToLocalTime($el)" { (item.reported_at.to_rfc3339()) }
+            pre .pre x-init="$store.util.formatToLocalTime($el)" { (item.reported_at.to_rfc3339()) }
             h2 { (lc.head_summary) }
             pre .pre { (item.error_summary) }
             h2 { (lc.head_stack) }

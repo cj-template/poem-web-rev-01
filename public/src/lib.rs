@@ -8,7 +8,6 @@ use error_stack::{Report, ResultExt};
 use poem::middleware::CatchPanic;
 use poem::{EndpointExt, IntoResponse, Server};
 use shared::utils::config::Config;
-use shared::utils::csrf::{CSRF_PATH, route_csrf};
 use shared::utils::embed::enforce_min_js_on_prod;
 use shared::utils::error::boot_error::MainError;
 use shared::utils::log::log_poem_error;
@@ -21,12 +20,10 @@ pub async fn boot() -> Result<(), Report<MainError>> {
 
     let route = home_route();
 
-    let route = route
-        .nest(
-            EMBED_PATH,
-            enforce_min_js_on_prod(AssetFilesEndPoint::new()),
-        )
-        .nest(CSRF_PATH, route_csrf());
+    let route = route.nest(
+        EMBED_PATH,
+        enforce_min_js_on_prod(AssetFilesEndPoint::new()),
+    );
 
     let route = route
         .around(init_request_cache)
