@@ -264,7 +264,6 @@ var htmx = (function () {
       responseHandling: [
         { code: "204", swap: false },
         { code: "[23]..", swap: true },
-        { code: "422", swap: true },
         { code: "[45]..", swap: false, error: true },
       ],
       /**
@@ -281,7 +280,7 @@ var htmx = (function () {
        */
       historyRestoreAsHxRequest: true,
       /**
-       * Weather to report input validation errors to the end user and update focus to the first input that fails validation.
+       * Whether to report input validation errors to the end user and update focus to the first input that fails validation.
        * This should always be enabled as this matches default browser form submit behaviour
        * @type boolean
        * @default false
@@ -297,7 +296,7 @@ var htmx = (function () {
     location,
     /** @type {typeof internalEval} */
     _: null,
-    version: "2.0.7",
+    version: "2.0.8",
   };
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper;
@@ -549,6 +548,9 @@ var htmx = (function () {
    * @returns {Document}
    */
   function parseHTML(resp) {
+    if ("parseHTMLUnsafe" in Document) {
+      return Document.parseHTMLUnsafe(resp);
+    }
     const parser = new DOMParser();
     return parser.parseFromString(resp, "text/html");
   }
@@ -3417,7 +3419,7 @@ var htmx = (function () {
   //= ===================================================================
   // History Support
   //= ===================================================================
-  let currentPathForHistory = location.pathname + location.search;
+  let currentPathForHistory;
 
   /**
    * @param {string} path
@@ -3428,6 +3430,8 @@ var htmx = (function () {
       sessionStorage.setItem("htmx-current-path-for-history", path);
     }
   }
+
+  setCurrentPathForHistory(location.pathname + location.search);
 
   /**
    * @returns {Element}
@@ -4512,6 +4516,9 @@ var htmx = (function () {
             swapOverride: context.swap,
             select: context.select,
             returnPromise: true,
+            push: context.push,
+            replace: context.replace,
+            selectOOB: context.selectOOB,
           },
         );
       }
@@ -5195,8 +5202,11 @@ var htmx = (function () {
     const requestPath = responseInfo.pathInfo.finalRequestPath;
     const responsePath = responseInfo.pathInfo.responsePath;
 
-    const pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-    const replaceUrl = getClosestAttributeValue(elt, "hx-replace-url");
+    const pushUrl =
+      responseInfo.etc.push || getClosestAttributeValue(elt, "hx-push-url");
+    const replaceUrl =
+      responseInfo.etc.replace ||
+      getClosestAttributeValue(elt, "hx-replace-url");
     const elementIsBoosted = getInternalData(elt).boosted;
 
     let saveType = null;
@@ -5315,19 +5325,17 @@ var htmx = (function () {
     }
 
     if (hasHeader(xhr, /HX-Location:/i)) {
-      saveCurrentPageToHistory();
       let redirectPath = xhr.getResponseHeader("HX-Location");
-      /** @type {HtmxAjaxHelperContext&{path:string}} */
-      var redirectSwapSpec;
+      /** @type {HtmxAjaxHelperContext&{path?:string}} */
+      var redirectSwapSpec = {};
       if (redirectPath.indexOf("{") === 0) {
         redirectSwapSpec = parseJSON(redirectPath);
         // what's the best way to throw an error if the user didn't include this
         redirectPath = redirectSwapSpec.path;
         delete redirectSwapSpec.path;
       }
-      ajaxHelper("get", redirectPath, redirectSwapSpec).then(function () {
-        pushUrlIntoHistory(redirectPath);
-      });
+      redirectSwapSpec.push = redirectSwapSpec.push || "true";
+      ajaxHelper("get", redirectPath, redirectSwapSpec);
       return;
     }
 
@@ -5438,7 +5446,8 @@ var htmx = (function () {
         selectOverride = xhr.getResponseHeader("HX-Reselect");
       }
 
-      const selectOOB = getClosestAttributeValue(elt, "hx-select-oob");
+      const selectOOB =
+        etc.selectOOB || getClosestAttributeValue(elt, "hx-select-oob");
       const select = getClosestAttributeValue(elt, "hx-select");
 
       swap(target, serverResponse, swapSpec, {
@@ -5679,7 +5688,7 @@ var htmx = (function () {
       "[hx-trigger='restored'],[data-hx-trigger='restored']",
     );
     body.addEventListener("htmx:abort", function (evt) {
-      const target = evt.target;
+      const target = /** @type {CustomEvent} */ (evt).detail.elt || evt.target;
       const internalData = getInternalData(target);
       if (internalData && internalData.xhr) {
         internalData.xhr.abort();
@@ -5719,7 +5728,6 @@ var htmx = (function () {
 //
 // An extension to add head tag merging.
 //==========================================================
-
 (function () {
   var api = null;
 
@@ -5730,95 +5738,69 @@ var htmx = (function () {
   function mergeHead(newContent, defaultMergeStrategy) {
     if (newContent && newContent.indexOf("<head") > -1) {
       const htmlDoc = document.createElement("html");
-
       // remove svgs to avoid conflicts
-
       var contentWithSvgsRemoved = newContent.replace(
         /<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim,
         "",
       );
-
       // extract head tag
-
       var headTag = contentWithSvgsRemoved.match(
         /(<head(\s[^>]*>|>)([\s\S]*?)<\/head>)/im,
       );
 
       // if the  head tag exists...
-
       if (headTag) {
         var added = [];
-
         var removed = [];
-
         var preserved = [];
-
         var nodesToAppend = [];
 
         htmlDoc.innerHTML = headTag;
-
         var newHeadTag = htmlDoc.querySelector("head");
-
         var currentHead = document.head;
 
         if (newHeadTag == null) {
           return;
         } else {
           // put all new head elements into a Map, by their outerHTML
-
           var srcToNewHeadNodes = new Map();
-
           for (const newHeadChild of newHeadTag.children) {
             srcToNewHeadNodes.set(newHeadChild.outerHTML, newHeadChild);
           }
         }
 
         // determine merge strategy
-
         var mergeStrategy =
           api.getAttributeValue(newHeadTag, "hx-head") || defaultMergeStrategy;
 
         // get the current head
-
         for (const currentHeadElt of currentHead.children) {
           // If the current head element is in the map
-
           var inNewContent = srcToNewHeadNodes.has(currentHeadElt.outerHTML);
-
           var isReAppended =
             currentHeadElt.getAttribute("hx-head") === "re-eval";
-
           var isPreserved =
             api.getAttributeValue(currentHeadElt, "hx-preserve") === "true";
-
           if (inNewContent || isPreserved) {
             if (isReAppended) {
               // remove the current version and let the new version replace it and re-execute
-
               removed.push(currentHeadElt);
             } else {
               // this element already exists and should not be re-appended, so remove it from
-
               // the new content map, preserving it in the DOM
-
               srcToNewHeadNodes.delete(currentHeadElt.outerHTML);
-
               preserved.push(currentHeadElt);
             }
           } else {
             if (mergeStrategy === "append") {
               // we are appending and this existing element is not new content
-
               // so if and only if it is marked for re-append do we do anything
-
               if (isReAppended) {
                 removed.push(currentHeadElt);
-
                 nodesToAppend.push(currentHeadElt);
               }
             } else {
               // if this is a merge, we remove this content since it is not in the new head
-
               if (
                 api.triggerEvent(document.body, "htmx:removingHeadElement", {
                   headElement: currentHeadElt,
@@ -5831,37 +5813,28 @@ var htmx = (function () {
         }
 
         // Push the tremaining new head elements in the Map into the
-
         // nodes to append to the head tag
-
         nodesToAppend.push(...srcToNewHeadNodes.values());
-
         log("to append: ", nodesToAppend);
 
         for (const newNode of nodesToAppend) {
           log("adding: ", newNode);
-
           var newElt = document
             .createRange()
             .createContextualFragment(newNode.outerHTML);
-
           log(newElt);
-
           if (
             api.triggerEvent(document.body, "htmx:addingHeadElement", {
               headElement: newElt,
             }) !== false
           ) {
             currentHead.appendChild(newElt);
-
             added.push(newElt);
           }
         }
 
         // remove all removed elements, after we have appended the new elements to avoid
-
         // additional network requests for things like style sheets
-
         for (const removedElement of removed) {
           if (
             api.triggerEvent(document.body, "htmx:removingHeadElement", {
@@ -5884,15 +5857,12 @@ var htmx = (function () {
   htmx.defineExtension("head-support", {
     init: function (apiRef) {
       // store a reference to the internal API.
-
       api = apiRef;
 
       htmx.on("htmx:afterSwap", function (evt) {
         let xhr = evt.detail.xhr;
-
         if (xhr) {
           var serverResponse = xhr.response;
-
           if (
             api.triggerEvent(document.body, "htmx:beforeHeadMerge", evt.detail)
           ) {
@@ -5915,185 +5885,26 @@ var htmx = (function () {
 
       htmx.on("htmx:historyItemCreated", function (evt) {
         var historyItem = evt.detail.item;
-
         historyItem.head = document.head.outerHTML;
       });
     },
   });
 })();
 
-//==========================================================
-// response-targets.js
-//==========================================================
 (function () {
-  /** @type {import("../htmx").HtmxInternalApi} */
-
-  var api;
-
-  var attrPrefix = "hx-target-";
-
-  // IE11 doesn't support string.startsWith
-
-  function startsWith(str, prefix) {
-    return str.substring(0, prefix.length) === prefix;
-  }
-
-  /**
-
-     * @param {HTMLElement} elt
-
-     * @param {number} respCode
-
-     * @returns {HTMLElement | null}
-
-     */
-
-  function getRespCodeTarget(elt, respCodeNumber) {
-    if (!elt || !respCodeNumber) return null;
-
-    var respCode = respCodeNumber.toString();
-
-    // '*' is the original syntax, as the obvious character for a wildcard.
-    // The 'x' alternative was added for maximum compatibility with HTML
-    // templating engines, due to ambiguity around which characters are
-    // supported in HTML attributes.
-    //
-    // Start with the most specific possible attribute and generalize from
-    // there.
-
-    var attrPossibilities = [
-      respCode,
-
-      respCode.substring(0, 2) + "*",
-
-      respCode.substring(0, 2) + "x",
-
-      respCode.substring(0, 1) + "*",
-
-      respCode.substring(0, 1) + "x",
-
-      respCode.substring(0, 1) + "**",
-
-      respCode.substring(0, 1) + "xx",
-
-      "*",
-
-      "x",
-
-      "***",
-
-      "xxx",
-    ];
-
-    if (startsWith(respCode, "4") || startsWith(respCode, "5")) {
-      attrPossibilities.push("error");
-    }
-
-    for (var i = 0; i < attrPossibilities.length; i++) {
-      var attr = attrPrefix + attrPossibilities[i];
-
-      var attrValue = api.getClosestAttributeValue(elt, attr);
-
-      if (attrValue) {
-        if (attrValue === "this") {
-          return api.findThisElement(elt, attr);
-        } else {
-          return api.querySelectorExt(elt, attrValue);
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /** @param {Event} evt */
-
-  function handleErrorFlag(evt) {
-    if (evt.detail.isError) {
-      if (htmx.config.responseTargetUnsetsError) {
-        evt.detail.isError = false;
-      }
-    } else if (htmx.config.responseTargetSetsError) {
-      evt.detail.isError = true;
-    }
-  }
-
-  htmx.defineExtension("response-targets", {
-    /** @param {import("../htmx").HtmxInternalApi} apiRef */
-
-    init: function (apiRef) {
-      api = apiRef;
-
-      if (htmx.config.responseTargetUnsetsError === undefined) {
-        htmx.config.responseTargetUnsetsError = true;
-      }
-
-      if (htmx.config.responseTargetSetsError === undefined) {
-        htmx.config.responseTargetSetsError = false;
-      }
-
-      if (htmx.config.responseTargetPrefersExisting === undefined) {
-        htmx.config.responseTargetPrefersExisting = false;
-      }
-
-      if (htmx.config.responseTargetPrefersRetargetHeader === undefined) {
-        htmx.config.responseTargetPrefersRetargetHeader = true;
-      }
+  htmx.defineExtension("alpine-morph", {
+    isInlineSwap: function (swapStyle) {
+      return swapStyle === "morph";
     },
-
-    /**
-
-         * @param {string} name
-
-         * @param {Event} evt
-
-         */
-
-    onEvent: function (name, evt) {
-      if (
-        name === "htmx:beforeSwap" &&
-        evt.detail.xhr &&
-        evt.detail.xhr.status !== 200
-      ) {
-        if (evt.detail.target) {
-          if (htmx.config.responseTargetPrefersExisting) {
-            evt.detail.shouldSwap = true;
-
-            handleErrorFlag(evt);
-
-            return true;
-          }
-
-          if (
-            htmx.config.responseTargetPrefersRetargetHeader &&
-            evt.detail.xhr.getAllResponseHeaders().match(/HX-Retarget:/i)
-          ) {
-            evt.detail.shouldSwap = true;
-
-            handleErrorFlag(evt);
-
-            return true;
-          }
+    handleSwap: function (swapStyle, target, fragment) {
+      if (swapStyle === "morph") {
+        if (fragment.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+          Alpine.morph(target, fragment.firstElementChild);
+          return [target];
+        } else {
+          Alpine.morph(target, fragment.outerHTML);
+          return [target];
         }
-
-        if (!evt.detail.requestConfig) {
-          return true;
-        }
-
-        var target = getRespCodeTarget(
-          evt.detail.requestConfig.elt,
-          evt.detail.xhr.status,
-        );
-
-        if (target) {
-          handleErrorFlag(evt);
-
-          evt.detail.shouldSwap = true;
-
-          evt.detail.target = target;
-        }
-
-        return true;
       }
     },
   });
@@ -6186,6 +5997,9 @@ var htmx = (function () {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
@@ -6232,6 +6046,9 @@ var htmx = (function () {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**

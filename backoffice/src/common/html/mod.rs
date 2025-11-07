@@ -29,7 +29,7 @@ fn main_css_name() -> String {
 fn html_doc(title: &str, content: Markup, head: Markup, footer: Markup) -> Markup {
     html! {
         (DOCTYPE)
-        html {
+        html lang="en" {
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1";

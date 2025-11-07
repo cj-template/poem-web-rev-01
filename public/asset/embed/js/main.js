@@ -1,5 +1,6 @@
 import htmx from './lib/htmx/htmx.esm.js'
 import Alpine from './lib/alpine/alpine.esm.js'
+import morph from './lib/alpine/plugin/morph.esm.js'
 
 export function start() {
     Alpine.store('csrf', {
@@ -73,5 +74,7 @@ export function start() {
     window.Alpine = Alpine;
     window.htmx = htmx;
 
+    Alpine.plugin(morph);
+    
     Alpine.start();
 }
