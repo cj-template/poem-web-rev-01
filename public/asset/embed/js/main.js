@@ -3,6 +3,40 @@ import Alpine from './lib/alpine/alpine.esm.js'
 import morph from './lib/alpine/plugin/morph.esm.js'
 
 export function start() {
+    Alpine.store('util', {
+        /**
+         * @param {HTMLElement} from
+         * @param {string} toHtml
+         * @returns {Promise<*>}
+         */
+        async morph(from, toHtml) {
+            let option = {
+                updating(el, toEl, childrenOnly, skip) {
+                    if (el.dataset && el.dataset.morphChildrenOnly === 'true') {
+                        return childrenOnly();
+                    } else if (el.dataset && el.dataset.morphIgnore === 'true') {
+                        return skip();
+                    }
+                },
+            };
+            await Alpine.morph(from, toHtml, option);
+        },
+        /**
+         * @param from
+         * @param toHtml
+         * @returns {Promise<*>}
+         */
+        async morphFooterSplit(from, toHtml) {
+            let split = toHtml.split('<!-- split -->');
+            toHtml = split[0];
+            let footer = split[1];
+            await this.morph(from, toHtml);
+            htmx.swap("#footer", footer, {
+                swapStyle: "beforeend",
+            });
+        }
+    });
+
     Alpine.store('csrf', {
         token: '',
         /** @param {string} token */
@@ -37,6 +71,23 @@ export function start() {
                 }
             });
         }
+    });
+
+    htmx.defineExtension("alpine-morph", {
+        isInlineSwap: function (swapStyle) {
+            return swapStyle === "morph";
+        },
+        handleSwap: function (swapStyle, target, fragment) {
+            if (swapStyle === "morph") {
+                if (fragment.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+                    Alpine.$store.util.morph(target, fragment.firstElementChild);
+                    return [target];
+                } else {
+                    Alpine.$store.util.morph(target, fragment.outerHTML);
+                    return [target];
+                }
+            }
+        },
     });
 
     htmx.on("htmx:responseError", function (evt) {
@@ -75,6 +126,6 @@ export function start() {
     window.htmx = htmx;
 
     Alpine.plugin(morph);
-    
+
     Alpine.start();
 }
